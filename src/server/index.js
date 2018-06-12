@@ -1,5 +1,9 @@
 import ReactDom from 'react-dom/server';
-import template from '../client/components/App/App.jsx';
+import env from 'dotenv/config';
 
-const componentHTML = ReactDom.renderToString(template({}));
-console.log(componentHTML);
+// import template from '../client/components/App/App.jsx';
+
+// const componentHTML = ReactDom.renderToString(template({}));
+// console.log(componentHTML);
+
+console.log(process.env.DIR_DIST_2);
