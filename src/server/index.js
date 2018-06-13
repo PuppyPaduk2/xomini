@@ -1,9 +1,22 @@
+import express from 'express';
+import React from 'react';
 import ReactDom from 'react-dom/server';
-import env from 'dotenv/config';
+import template from '../client/html';
+import App from '../client/components/App/App';
 
-// import template from '../client/components/App/App.jsx';
+const PORT = 3000;
+const app = express();
 
-// const componentHTML = ReactDom.renderToString(template({}));
-// console.log(componentHTML);
+app.use(express.static(__dirname + '/../client'));
 
-console.log(process.env.DIR_DIST_2);
+app.get('/*', function(req, res) {
+   const result = ReactDom.renderToString(template({
+      content: <App name="123123"/>
+   }));
+
+   return res.send(result);
+});
+
+app.listen(PORT, function() {
+   console.log(`Example app listening on port ${PORT}!`);
+});

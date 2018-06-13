@@ -1,17 +1,24 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const env = require('dotenv').config().parsed;
+
+const dirDist = path.resolve([env.DIR_DIST, 'client'].join('/'));
 
 module.exports = {
    entry: './src/client',
    output: {
       filename: 'bundle.js',
-      path: path.resolve(__dirname, 'dist')
+      path: dirDist
    },
    module: {
       rules: [{
          test: /\.(js|jsx)$/,
          exclude: /node_modules/,
-         use: ['babel-loader']
+         use: {
+            loader: 'babel-loader',
+            options: {
+               presets: ['es2015', 'stage-0', 'react']
+            }
+         }
       }, {
          test: /\.css$/,
          loader: [
