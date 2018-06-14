@@ -9,36 +9,8 @@ export default class Palette extends Component {
          colors: props.colors instanceof Array
             ? props.colors
             : [],
-         rows: 3
+         columns: 3
       };
-
-      try {
-         socket.on('player:selectedColor', this.selectedColor);
-      } catch(e) {
-         // pass
-      }
-   }
-
-   /**
-    * @param {Object} config
-    */
-   colorClick(config) {
-      socket.emit('player:selectedColor', config);
-   }
-
-   /**
-    * @param {Object} confg
-    */
-   selectedColor = (config) => {
-      const colors = this.state.colors;
-
-      colors.push(config);
-
-      this.setState({
-         colors: colors
-      });
-
-      console.log('selectedColor', config);
    }
 
    render() {

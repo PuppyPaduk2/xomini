@@ -4,7 +4,7 @@ import App from './components/App/App';
 
 import HtmlStyle from './components/Html/Html.less';
 import AppStyle from  './components/App/App.less';
-import PaletteStyle from './components/Palette/Palette.less';
+import GridColorsStyle from './components/GridColors/GridColors.less';
 
 let initialData = document.getElementById('initial-data').getAttribute('data-json');
 initialData = typeof initialData === 'string' ? JSON.parse(initialData) : {};
