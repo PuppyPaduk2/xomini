@@ -2,31 +2,43 @@ import React, { Component } from 'react';
 import template from './GridColors.template';
 
 export default class GridColors extends Component {
-   constructor(props) {
-      super(props);
+   static defaultProps = {
+      colors: [],
+      columns: 1
+   }
 
-      this.state = {
-         colors: props.colors instanceof Array
-            ? props.colors
-            : [],
-         columns: typeof props.columns === 'number'
-            ? props.columns
-            : 1
-      };
+   // constructor(props) {
+   //    super(props);
+
+      // props.colors = props.colors instanceof Array
+      //    ? props.colors
+      //    : [];
+      // props.columns = typeof props.columns === 'number'
+      //    ? props.columns
+      //    : 1;
+
+      // this.state = {
+      //    colors: props.colors instanceof Array
+      //       ? props.colors
+      //       : [],
+      //    columns: typeof props.columns === 'number'
+      //       ? props.columns
+      //       : 1
+      // };
 
       // try {
       //    socket.on('player:selectedColor', this.selectedColor);
       // } catch(e) {
       //    // pass
       // }
-   }
+   // }
 
-   /**
-    * @param {Object} config
-    */
-   colorClick(config) {
+   // /**
+   //  * @param {Object} config
+   //  */
+   // colorClick(config) {
       // socket.emit('player:selectedColor', config);
-   }
+   // }
 
    // /**
    //  * @param {Object} confg

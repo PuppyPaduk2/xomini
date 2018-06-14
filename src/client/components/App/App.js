@@ -27,10 +27,10 @@ export default class App extends Component {
    click = () => {
       // console.log('click', this.state);
 
-      this.setState({
-         stateGame: this.state.stateGame.concat(colors).concat(colors),
-         players: this.state.players + 1
-      });
+      // this.setState({
+      //    stateGame: this.state.stateGame.concat(colors).concat(colors),
+      //    players: this.state.players + 1
+      // });
 
    //    console.log('chat message');
    //    socket.emit('chat message', 'new message');
@@ -38,6 +38,10 @@ export default class App extends Component {
 
    playingSpaceonRef = (ref) => {
       console.log(ref);
+   }
+
+   colorClick() {
+      console.log('colorClick', this, arguments);
    }
 
    render() {
