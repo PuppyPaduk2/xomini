@@ -6,6 +6,12 @@ export default function(app) {
    const io = Io(http);
 
    io.on('connection', function(socket) {
+      const sockets = Object.keys(io.sockets.connected).map(id => {
+         return { id: id };
+      });
+
+      io.emit('player:connection', sockets);
+
       socket.on('player:selectedColor', function(data) {
          data.player = socket.id;
 
@@ -13,5 +19,8 @@ export default function(app) {
       });
    });
 
-   return http;
+   return {
+      http: http,
+      io: io
+   };
 };

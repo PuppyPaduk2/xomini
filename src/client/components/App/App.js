@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import template from './App.template';
+import GridColor from '../GridColors/GridColors';
+import Players from '../Players/Players';
 
 const colors = [
    { color: '#f44336' },
@@ -14,37 +15,56 @@ const colors = [
 ];
 
 export default class App extends Component {
+   static defaultProps = {
+      stateGame: [
+         { lock: true },
+         { lock: true },
+         { lock: true },
+         { lock: true }
+      ],
+      players: [],
+      palette: colors
+   };
+
    constructor(props) {
       super(props);
-
-      this.state = {
-         stateGame: colors.concat(colors).concat(colors),
-         players: 5,
-         palette: colors
-      };
+      this.state = props;
    }
 
-   click = () => {
-      // console.log('click', this.state);
-
-      // this.setState({
-      //    stateGame: this.state.stateGame.concat(colors).concat(colors),
-      //    players: this.state.players + 1
-      // });
-
-   //    console.log('chat message');
-   //    socket.emit('chat message', 'new message');
-   }
-
-   playingSpaceonRef = (ref) => {
-      console.log(ref);
+   componentDidMount() {
+      socket.on('player:connection', this._playerConnection);
    }
 
    colorClick() {
-      console.log('colorClick', this, arguments);
+      console.log(this)
+      // this.setState({
+      //    players: this.state.players + 1
+      // });
+   }
+
+   /**
+    * @param {Object[]} players
+    */
+   _playerConnection = (players) => {
+      this.setState({
+         players: players
+      });
    }
 
    render() {
-      return template.call(this, this.state);
+      const state = this.state;
+
+      return <div className="app">
+         <Players players={state.players}/>
+
+         <GridColor
+            colors={state.stateGame}
+            columns={state.players.length}/>
+
+         <GridColor
+            colors={state.palette}
+            columns={3}
+            colorClick={this.colorClick.bind(this)} />
+      </div>;
    }
 }

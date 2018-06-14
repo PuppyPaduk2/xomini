@@ -9,13 +9,13 @@ import App from '../client/components/App/App';
 const PORT = 3000;
 
 const app = express();
-const http = setupHttp(app);
+const {http, io} = setupHttp(app);
 
 app.use(express.static(__dirname + '/../client'));
 
-app.get('/*', function(req, res) {
+app.get('/', function(req, res) {
    const initialData = {
-      name: '123123'
+      players: []
    };
    const htmlParams = {
       content: <App {...initialData} />,
