@@ -11,7 +11,8 @@ export default class App extends Component {
    }
 
    click = () => {
-      console.log(this);
+      console.log('chat message');
+      socket.emit('chat message', 'new message');
    }
 
    render() {

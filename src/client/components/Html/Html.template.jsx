@@ -5,7 +5,7 @@ export default function(props) {
       <head>
          <title>{props.title}</title>
          <script src="/socket.io/socket.io.js"></script>
-         <script src="socket.js"></script>
+         <script src="global.js"></script>
       </head>
 
       <body>
