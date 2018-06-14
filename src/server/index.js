@@ -1,12 +1,17 @@
 import express from 'express';
 import React from 'react';
 import ReactDom from 'react-dom/server';
+import Http from 'http';
+import Io from 'socket.io';
 
 import Html from '../client/components/Html/Html';
 import App from '../client/components/App/App';
 
 const PORT = 3000;
+
 const app = express();
+const http = Http.Server(app);
+const io = Io(http);
 
 app.use(express.static(__dirname + '/../client'));
 
@@ -15,15 +20,19 @@ app.get('/*', function(req, res) {
       name: '123123'
    };
    const htmlParams = {
-      content: <App {...initialData}/>,
+      content: <App {...initialData} />,
       initialData: initialData
    };
 
-   const result = ReactDom.renderToString(<Html {...htmlParams}/>);
+   const result = ReactDom.renderToString(<Html {...htmlParams} />);
 
    return res.send(result);
 });
 
-app.listen(PORT, function() {
+io.on('connection', function(socket) {
+   console.log('a user connected');
+});
+
+http.listen(PORT, function() {
    console.log(`Example app listening on port ${PORT}!`);
 });

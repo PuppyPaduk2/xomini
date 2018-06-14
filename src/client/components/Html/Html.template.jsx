@@ -4,6 +4,8 @@ export default function(props) {
    return <html>
       <head>
          <title>{props.title}</title>
+         <script src="/socket.io/socket.io.js"></script>
+         <script src="socket.js"></script>
       </head>
 
       <body>
