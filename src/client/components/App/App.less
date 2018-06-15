@@ -3,14 +3,34 @@
    height: 100%;
    background-color: azure;
    display: flex;
-   justify-content: center;
-   align-items: center;
+   flex-direction: column;
 
-   &>* {
-      margin-right: 2rem;
+   .top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: aquamarine;
+      display: flex;
+   }
 
-      &:last-child {
-         margin-right: 0;
+   .center {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &>* {
+         margin-right: 2rem;
+   
+         &:last-child {
+            margin-right: 0;
+         }
       }
+   }
+
+   .bottom {
+      display: flex;
    }
 }

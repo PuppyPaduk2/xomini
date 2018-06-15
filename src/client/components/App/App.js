@@ -14,7 +14,8 @@ export default class App extends Component {
       ],
       players: [],
       palette: colors,
-      playerName: ''
+      playerName: '',
+      isSendName: false
    };
 
    constructor(props) {
@@ -55,25 +56,37 @@ export default class App extends Component {
       console.log('_sendName:', this.state.playerName);
 
       this.sockets.players.emit('insertedName', this.state.playerName);
+      this.setState({ isSendName: true });
    }
 
    render() {
       const state = this.state;
+      let top = <div className="top">
+            <Players players={state.players} />
+         </div>;
+      let center = <div className="center">
+            <input type="text" value={this.state.playerName} onChange={this._changeText.bind(this)} />
+            <button onClick={this._sendName}>Send name</button>
+         </div>;
+      let bottom;
+
+      if (state.isSendName) {
+         center = <div className="center">
+            <GridColor
+               colors={state.stateGame}
+               columns={state.players.length} />
+
+            <GridColor
+               colors={state.palette}
+               columns={3}
+               colorClick={this.colorClick.bind(this)} />
+         </div>;
+      }
 
       return <div className="app">
-         <input type="text" value={this.state.playerName} onChange={this._changeText.bind(this)} />
-         <button onClick={this._sendName}>Send name</button>
-
-         <Players players={state.players} />
-
-         <GridColor
-            colors={state.stateGame}
-            columns={state.players.length} />
-
-         <GridColor
-            colors={state.palette}
-            columns={3}
-            colorClick={this.colorClick.bind(this)} />
+         {top}
+         {center}
+         {bottom}
       </div>;
    }
 }

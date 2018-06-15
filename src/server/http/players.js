@@ -2,7 +2,7 @@ function getSocketsParams(players) {
    const sockets = players.sockets;
 
    return Object.keys(sockets).map(id => {
-      return { id: id, name: 'name>>>' + sockets[id].name };
+      return { id: id, name: sockets[id].name };
    });
 }
 
