@@ -33,6 +33,7 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
+    "@material-ui/core": "^1.2.1",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "lodash": "^4.17.10",

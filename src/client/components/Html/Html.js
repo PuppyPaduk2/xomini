@@ -25,8 +25,9 @@ export default class Html extends Component {
          <head>
             <title>{state.title}</title>
             <script src="/socket.io/socket.io.js"></script>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
          </head>
-   
+
          <body>
             <div id="root">
                {state.content}

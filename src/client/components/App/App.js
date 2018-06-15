@@ -4,6 +4,8 @@ import Players from '../Players/Players';
 import createSocket from '../../common/createSocket';
 import colors from './colors';
 
+import PlayerName from '../PlayerName/PlayerName';
+
 export default class App extends Component {
    static defaultProps = {
       stateGame: [
@@ -46,7 +48,7 @@ export default class App extends Component {
       });
    }
 
-   _changeText(ev) {
+   _changeText = ev => {
       this.setState({
          playerName: ev.target.value
       });
@@ -62,12 +64,15 @@ export default class App extends Component {
    render() {
       const state = this.state;
       let top = <div className="top">
-            <Players players={state.players} />
-         </div>;
+         <Players players={state.players} />
+      </div>;
       let center = <div className="center">
-            <input type="text" value={this.state.playerName} onChange={this._changeText.bind(this)} />
-            <button onClick={this._sendName}>Send name</button>
-         </div>;
+         <PlayerName
+            text={state.playerName}
+            onChange={this._changeText}
+            onSend={this._sendName}
+         />
+      </div>;
       let bottom;
 
       if (state.isSendName) {
