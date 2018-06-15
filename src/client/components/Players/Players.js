@@ -7,7 +7,7 @@ export default class Players extends Component {
 
    render() {
       const players = this.props.players.map((player, index) => {
-         return <div className="player" key={index}>{player.id}</div>;
+         return <div className="player" key={index}>{player.name}</div>;
       });
 
       return <div className="players">{players}</div>;

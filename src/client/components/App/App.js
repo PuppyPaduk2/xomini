@@ -1,18 +1,8 @@
 import React, { Component } from 'react';
 import GridColor from '../GridColors/GridColors';
 import Players from '../Players/Players';
-
-const colors = [
-   { color: '#f44336' },
-   { color: '#e91e63' },
-   { color: '#ffeb3b' },
-   { color: '#673ab7' },
-   { color: '#2196f3' },
-   { color: '#00bcd4' },
-   { color: '#009688' },
-   { color: '#ff5722' },
-   { color: '#9e9e9e' }
-];
+import createSocket from '../../common/createSocket';
+import colors from './colors';
 
 export default class App extends Component {
    static defaultProps = {
@@ -23,7 +13,8 @@ export default class App extends Component {
          { lock: true }
       ],
       players: [],
-      palette: colors
+      palette: colors,
+      playerName: ''
    };
 
    constructor(props) {
@@ -32,34 +23,52 @@ export default class App extends Component {
    }
 
    componentDidMount() {
-      socket.on('player:connection', this._playerConnection);
+      const players = createSocket('/players');
+
+      this.sockets = { players: players };
+
+      players.on('initConnection', this._changePlayers);
+      players.on('update', this._changePlayers);
+      players.on('initDisconnect', this._changePlayers);
    }
 
    colorClick() {
       console.log(this)
-      // this.setState({
-      //    players: this.state.players + 1
-      // });
    }
 
    /**
     * @param {Object[]} players
     */
-   _playerConnection = (players) => {
+   _changePlayers = (players) => {
       this.setState({
          players: players
       });
+   }
+
+   _changeText(ev) {
+      this.setState({
+         playerName: ev.target.value
+      });
+   }
+
+   _sendName = () => {
+      console.log('_sendName:', this.state.playerName);
+
+      this.sockets.players.emit('insertedName', this.state.playerName);
    }
 
    render() {
       const state = this.state;
 
       return <div className="app">
-         <Players players={state.players}/>
+         <input type="text" value={this.state.playerName} onChange={this._changeText.bind(this)} />
+         <button onClick={this._sendName}>Send name</button>
+
+         <Players players={state.players} />
 
          <GridColor
             colors={state.stateGame}
-            columns={state.players.length}/>
+            columns={state.players.length} />
 
          <GridColor
             colors={state.palette}

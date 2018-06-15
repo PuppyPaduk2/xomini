@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import template from './Html.template';
 
 export default class Html extends Component {
    constructor(props) {
@@ -20,6 +19,21 @@ export default class Html extends Component {
    }
 
    render() {
-      return template.call(this, this.state);
+      const state = this.state;
+
+      return <html>
+         <head>
+            <title>{state.title}</title>
+            <script src="/socket.io/socket.io.js"></script>
+         </head>
+   
+         <body>
+            <div id="root">
+               {state.content}
+            </div>
+            <script id="initial-data" type="text/plain" data-json={state.initialData}></script>
+            <script src="bundle.js"></script>
+         </body>
+      </html>;
    }
 }
