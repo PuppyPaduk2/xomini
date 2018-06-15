@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-export default class App extends Component {
+export default class PlayerName extends Component {
    render() {
       return <div className="player-name">
          <TextField

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import GridColor from '../GridColors/GridColors';
 import Players from '../Players/Players';
 import createSocket from '../../common/createSocket';
 import colors from './colors';
 
 import PlayerName from '../PlayerName/PlayerName';
+import GameSpace from '../GameSpace/GameSpace';
 
 export default class App extends Component {
    static defaultProps = {
@@ -35,7 +35,7 @@ export default class App extends Component {
       players.on('initDisconnect', this._changePlayers);
    }
 
-   colorClick() {
+   colorClick = () => {
       console.log(this)
    }
 
@@ -63,34 +63,28 @@ export default class App extends Component {
 
    render() {
       const state = this.state;
-      let top = <div className="top">
-         <Players players={state.players} />
-      </div>;
-      let center = <div className="center">
-         <PlayerName
-            text={state.playerName}
-            onChange={this._changeText}
-            onSend={this._sendName}
-         />
-      </div>;
+      let top;
+      let center = <PlayerName
+         text={state.playerName}
+         onChange={this._changeText}
+         onSend={this._sendName}
+      />;
       let bottom;
 
       if (state.isSendName) {
-         center = <div className="center">
-            <GridColor
-               colors={state.stateGame}
-               columns={state.players.length} />
+         top = <Players players={state.players} />;
 
-            <GridColor
-               colors={state.palette}
-               columns={3}
-               colorClick={this.colorClick.bind(this)} />
-         </div>;
+         center = <GameSpace
+            stateGame={state.stateGame}
+            columns={state.players.length}
+            palette={state.palette}
+            onColorPaletteClick={state.colorClick}
+         />;
       }
 
       return <div className="app">
-         {top}
-         {center}
+         <div className="top">{top}</div>
+         <div className="center">{center}</div>
          {bottom}
       </div>;
    }
