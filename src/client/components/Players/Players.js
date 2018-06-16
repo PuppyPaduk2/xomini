@@ -9,7 +9,7 @@ export default class Players extends Component {
    };
 
    render() {
-      const players = this.props.players.map((player, index) => {
+      const players = (this.props.players || []).map((player, index) => {
          return (
             <ListItem key={index}>
                <ListItemText

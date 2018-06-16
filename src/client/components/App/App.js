@@ -2,35 +2,37 @@ import React, { Component } from 'react';
 import Players from '../Players/Players';
 import createSocket from '../../common/createSocket';
 import colors from './colors';
+import { game } from '../../game';
 import _ from 'lodash';
 
 import PlayerIn from '../PlayerIn/PlayerIn';
 import GameSpace from '../GameSpace/GameSpace';
+import Button from '@material-ui/core/Button';
 
 const path = '/players';
 
 export default class App extends Component {
-   state = {
-      stateGame: [
-         { lock: true },
-         { lock: true },
-         { lock: true },
-         { lock: true }
-      ],
-      players: [],
+   state = _.merge({
       palette: colors,
-      isSignIn: false
-   };
+      isSignIn: false,
+   }, game.defaultState());
 
    componentDidMount() {
       this.sockets = { players: createSocket(path) };
    };
 
-   /**
-    * @param {Object[]} players
-    */
-   changePlayers = (players) => {
-      this.setState({ players: players });
+   initConnection = params => {
+      params.isSignIn = true;
+      this.setState(params);
+
+      console.log(this.state);
+   };
+
+   initConnectionError = message => {
+      if (!this.state.begin) {
+         this.sockets.room.disconnect();
+         delete this.sockets.room;
+      }
    };
 
    signIn = (params) => {
@@ -43,44 +45,59 @@ export default class App extends Component {
 
       if (!sockets.room) {
          room = createSocket(params.room, {
-            query: {
-               name: params.name
-            }
+            query: { name: params.name }
          });
-         room.on('initConnection', this.changePlayers);
-         room.on('update', this.changePlayers);
-         room.on('initDisconnect', this.changePlayers);
+
+         room.on('initConnection', this.initConnection);
+         room.on('initConnectionError', this.initConnectionError);
+         room.on('initDisconnect', this.setState.bind(this));
+         room.on('begin', this.setState.bind(this));
+
          sockets.room = room;
       }
+   };
 
-      this.setState({ isSignIn: true });
+   onClickBegin = () => {
+      if (!this.state.begin) {
+         this.sockets.room.emit('begin');
+      }
    };
 
    render() {
       const state = this.state;
       let top;
-      let center = <PlayerIn
-         name={state.playerName}
-         onChangeName={this._changeText}
-         onSend={this.signIn}
-      />;
+      let center = <PlayerIn onSend={this.signIn} />;
       let bottom;
 
       if (state.isSignIn) {
          top = <Players players={state.players} />;
 
-         center = <GameSpace
-            stateGame={state.stateGame}
-            columns={state.players.length}
-            palette={state.palette}
-         />;
+         center = (
+            <GameSpace
+               map={state.map}
+               players={state.players}
+               palette={state.palette}
+            />
+         );
+
+         bottom = (
+            <Button
+               className="button-send"
+               color="primary"
+               onClick={this.onClickBegin}
+            >
+               Start
+            </Button>
+         );
       }
 
-      return <div className="app">
-         <div className="top">{top}</div>
-         <div className="center">{center}</div>
-         {bottom}
-      </div>;
+      return (
+         <div className="app">
+            <div className="top">{top}</div>
+            <div className="center">{center}</div>
+            <div className="bottom">{bottom}</div>
+         </div>
+      );
    };
 
 }
