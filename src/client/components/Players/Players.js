@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 export default class Players extends Component {
    static defaultProp = {
@@ -7,9 +10,19 @@ export default class Players extends Component {
 
    render() {
       const players = this.props.players.map((player, index) => {
-         return <div className="player" key={index}>{player.name}</div>;
+         return (
+            <ListItem key={index}>
+               <ListItemText
+                  primary={player.name}
+               />
+            </ListItem>
+         );
       });
 
-      return <div className="players">{players}</div>;
+      return (
+         <div className="players">
+            <List dense={true}>{players}</List>
+         </div>
+      );
    }
 }

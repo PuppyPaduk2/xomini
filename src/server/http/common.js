@@ -13,9 +13,11 @@ export default {
       const {sockets, ids} = this.getSockets(namespace);
 
       return ids.map((id, index) => {
+         const socket = sockets[id];
+
          return {
-            id: id,
-            name: sockets[id].name
+            name: socket.name
+               || socket.handshake.query.name
                || ['Player', index + 1].join(' ')
          };
       });
@@ -36,6 +38,8 @@ export default {
 
          namespace.on('connection', socket => {
             namespace.emit('initConnection', this.getSocketsParams(namespace));
+
+            console.log(socket.handshake.query);
 
             if (connection instanceof Function) {
                connection(namespace, socket);

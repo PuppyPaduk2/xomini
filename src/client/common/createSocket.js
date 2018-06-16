@@ -1,10 +1,17 @@
+import _ from 'lodash';
+
 /**
  * @param {String[]} [url]
  */
 export default function createSocket(url, options) {
    options = options instanceof Object
       ? options
-      : { transports: ['websocket'], upgrade: false };
+      : {};
+
+   options = _.merge({
+      transports: ['websocket'],
+      upgrade: false
+   }, options);
 
    return io(url, options);
 }

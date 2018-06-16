@@ -42,7 +42,11 @@ export default class App extends Component {
       sockets.players.emit('signIn', params);
 
       if (!sockets.room) {
-         room = createSocket(params.room);
+         room = createSocket(params.room, {
+            query: {
+               name: params.name
+            }
+         });
          room.on('initConnection', this.changePlayers);
          room.on('update', this.changePlayers);
          room.on('initDisconnect', this.changePlayers);

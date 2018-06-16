@@ -23,6 +23,7 @@ export default class Html extends Component {
 
       return <html>
          <head>
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
             <title>{state.title}</title>
             <script src="/socket.io/socket.io.js"></script>
             <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
