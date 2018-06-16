@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import Players from '../Players/Players';
 import createSocket from '../../common/createSocket';
 import colors from './colors';
+import _ from 'lodash';
 
 import PlayerIn from '../PlayerIn/PlayerIn';
 import GameSpace from '../GameSpace/GameSpace';
+
+const path = '/players';
 
 export default class App extends Component {
    state = {
@@ -20,13 +23,7 @@ export default class App extends Component {
    };
 
    componentDidMount() {
-      const players = createSocket('/players');
-
-      this.sockets = { players: players };
-
-      players.on('initConnection', this.changePlayers);
-      players.on('update', this.changePlayers);
-      players.on('initDisconnect', this.changePlayers);
+      this.sockets = { players: createSocket(path) };
    };
 
    /**
@@ -36,8 +33,22 @@ export default class App extends Component {
       this.setState({ players: players });
    };
 
-   _sendName = (params) => {
-      this.sockets.players.emit('signIn', params);
+   signIn = (params) => {
+      const sockets = this.sockets;
+      let room;
+
+      params.room = [path, _.camelCase(params.room)].join('-');
+
+      sockets.players.emit('signIn', params);
+
+      if (!sockets.room) {
+         room = createSocket(params.room);
+         room.on('initConnection', this.changePlayers);
+         room.on('update', this.changePlayers);
+         room.on('initDisconnect', this.changePlayers);
+         sockets.room = room;
+      }
+
       this.setState({ isSignIn: true });
    };
 
@@ -47,7 +58,7 @@ export default class App extends Component {
       let center = <PlayerIn
          name={state.playerName}
          onChangeName={this._changeText}
-         onSend={this._sendName}
+         onSend={this.signIn}
       />;
       let bottom;
 

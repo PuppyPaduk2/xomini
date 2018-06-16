@@ -1,39 +1,24 @@
-function getSockets(players) {
-   const sockets = players.sockets;
-   return {
-      sockets: sockets,
-      ids: Object.keys(sockets)
-   };
-}
+import common from './common';
 
-function getSocketsParams(players) {
-   const {sockets, ids} = getSockets(players);
+const path = '/players';
 
-   return ids.map(id => {
-      return { id: id, name: sockets[id].name };
-   });
-}
+function signIn(io, socket, params) {
+   const room = params.room;
+   const name = params.name;
 
-function disconnect(players) {
-   players.emit('initDisconnect', getSocketsParams(players));
-}
+   if (typeof name === 'string' && name !== '') {
+      socket.name = name;
+   }
 
-function signIn(players, socket, params) {
-   socket.name = params.name
-      || 'Player ' + (getSockets(players).ids.indexOf(socket.id) + 1);
-   players.emit('update', getSocketsParams(players));
+   if (typeof room === 'string' && room !== '') {
+      common.namespace(io, room);
+   }
 }
 
 export default function(io) {
-   const players = io.of('/players');
-
-   players.on('connection', function(socket) {
-      players.emit('initConnection', getSocketsParams(players));
-
-      socket.on('signIn', signIn.bind(this, players, socket));
-
-      socket.on('disconnect', disconnect.bind(this, players));
+   const players = common.namespace(io, path, function(players, socket) {
+      socket.on('signIn', signIn.bind(this, io, socket));
    });
 
-   return io;
+   return players;
 }
