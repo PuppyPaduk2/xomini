@@ -25,8 +25,8 @@ export default class Html extends Component {
          <head>
             <meta name="viewport" content="width=device-width,initial-scale=1" />
             <title>{state.title}</title>
-            <script src="/socket.io/socket.io.js"></script>
-            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
+            {/* <script src="/socket.io/socket.io.js"></script> */}
+            {/* <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" /> */}
          </head>
 
          <body>
@@ -34,7 +34,7 @@ export default class Html extends Component {
                {state.content}
             </div>
             <script id="initial-data" type="text/plain" data-json={state.initialData}></script>
-            <script src="bundle.js"></script>
+            <script src="index.js"></script>
          </body>
       </html>;
    }

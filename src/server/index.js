@@ -9,9 +9,9 @@ import App from '../client/components/App/App';
 const PORT = 3000;
 
 const app = express();
-const {http, io} = setupHttp(app);
+const {server, io} = setupHttp(app);
 
-app.use(express.static(__dirname + '/../client'));
+app.use(express.static(__dirname + '../client'));
 
 app.get('/', function(req, res) {
    const initialData = {
@@ -27,6 +27,8 @@ app.get('/', function(req, res) {
    return res.send(result);
 });
 
-http.listen(PORT, function() {
+console.log('End');
+
+server.listen(PORT, function() {
    console.log(`Example app listening on port ${PORT}!`);
 });
