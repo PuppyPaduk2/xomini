@@ -4,15 +4,15 @@ import players from './http/players';
 
 export default function(app) {
    const server = http.Server(app);
-   const httpIo =new io(server, {
+   const serverIo = new io(server, {
       serveClient: false,
       wsEngine: 'ws'
    });
 
-   // players(httpIo);
+   players(serverIo);
 
    return {
       server: server,
-      io: httpIo
+      io: serverIo
    };
 };

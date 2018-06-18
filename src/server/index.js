@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import React from 'react';
 import ReactDom from 'react-dom/server';
@@ -9,9 +10,9 @@ import App from '../client/components/App/App';
 const PORT = 3000;
 
 const app = express();
-const {server, io} = setupHttp(app);
+const { server } = setupHttp(app);
 
-app.use(express.static(__dirname + '../client'));
+app.use(express.static(path.join('client')));
 
 app.get('/', function(req, res) {
    const initialData = {
@@ -26,8 +27,6 @@ app.get('/', function(req, res) {
 
    return res.send(result);
 });
-
-console.log('End');
 
 server.listen(PORT, function() {
    console.log(`Example app listening on port ${PORT}!`);

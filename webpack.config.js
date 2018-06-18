@@ -49,9 +49,7 @@ const createTarget = function(options) {
       mode: options.mode,
       node: options.node,
       target: options.target,
-      stats: {
-         // warnings: false
-      }
+      stats: options.stats
    }
 };
 
@@ -72,19 +70,9 @@ const server = createTarget({
    target: 'node',
    mode: mode,
    externals: ['uws'],
-   // externals: ['express', 'uws', 'ws', 'socket.io'],
-   node: {
-      
-      // console: false,
-      // fs: 'empty',
-      // net: 'empty',
-      // tls: 'empty'
-   },
-   // module: {
-   //    noParse: [
-   //       path.resolve(env.DIR_DIST, 'node_modules', 'uws')
-   //    ]
-   // }
+   stats: {
+      warnings: false
+   }
 });
 
 module.exports = [client, server];
