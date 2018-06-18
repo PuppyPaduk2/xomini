@@ -10,7 +10,7 @@ export default {
    },
 
    getSocketsParams: function(namespace) {
-      const {sockets, ids} = this.getSockets(namespace);
+      const { sockets, ids } = this.getSockets(namespace);
 
       return ids.map((id, index) => {
          const socket = sockets[id];
@@ -26,14 +26,13 @@ export default {
 
    /**
     * @param {Function} callback
-    * @param {Namespace} namespace
-    * @param {Socket} socket
+    * @param {Object} callbackParams
     */
-   getParams: function(callback, namespace, socket) {
-      let  params = {};
+   getParams: function(callback, callbackParams) {
+      let params = {};
 
       if (callback instanceof Function) {
-         params = callback(namespace, socket);
+         params = callback(callbackParams);
       }
 
       if (typeof params === 'string') {
@@ -63,6 +62,7 @@ export default {
     * @param {String} path
     * @param {Object} [options]
     * @param {Function} [options.connection]
+    * @param {Function} [options.disconnecting]
     * @param {Function} [options.disconnect]
     * 
     * @return {Namespace}
@@ -83,14 +83,35 @@ export default {
             this.emit(
                namespace,
                'initConnection',
-               this.getParams(options.connection, namespace, socket)
+               this.getParams(options.connection, {
+                  namespace: namespace,
+                  socket: socket
+               })
             );
+
+            socket.on('disconnecting', () => {
+               Object.keys(socket.rooms).forEach(key => {
+                  socket.to(key).emit('leave');
+               });
+
+               this.emit(
+                  namespace,
+                  'initDisconnecting',
+                  this.getParams(options.disconnecting, {
+                     namespace: namespace,
+                     socket: socket
+                  })
+               );
+            });
 
             socket.on('disconnect', () => {
                this.emit(
                   namespace,
                   'initDisconnect',
-                  this.getParams(options.disconnect, namespace, socket)
+                  this.getParams(options.disconnect, {
+                     namespace: namespace,
+                     socket: socket
+                  })
                );
             });
          });
@@ -99,6 +120,22 @@ export default {
       }
 
       return namespace;
+   },
+
+   /**
+    * @param {Socket} socket
+    * @param {String} room
+    * @param {Object} options
+    * @param {Function} [options.join]
+    */
+   room: function(socket, room, callback) {
+      return socket.join(room, () => {
+         this.emit(
+            socket.to(room),
+            'join',
+            this.getParams(callback)
+         );
+      });
    }
 
 };
