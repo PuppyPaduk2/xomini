@@ -39,7 +39,7 @@ export default class App extends Component {
       const sockets = this.sockets;
       let room;
 
-      params.room = [path, _.camelCase(params.room)].join('-');
+      // params.room = [path, _.camelCase(params.room)].join('-');
 
       sockets.players.emit('signIn', params);
 

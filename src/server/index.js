@@ -1,33 +1,40 @@
-import path from 'path';
-import express from 'express';
-import React from 'react';
-import ReactDom from 'react-dom/server';
-import setupHttp from './setupHttp';
+// import path from 'path';
+// import express from 'express';
+// import React from 'react';
+// import ReactDom from 'react-dom/server';
+// import setupHttp from './setupHttp';
 
-import Html from '../client/components/Html/Html';
-import App from '../client/components/App/App';
+// import Html from '../client/components/Html/Html';
+// import App from '../client/components/App/App';
 
-const PORT = 3000;
+// import gameIo from '../game.io/server';
 
-const app = express();
-const { server } = setupHttp(app);
+// const PORT = 3000;
 
-app.use(express.static(path.join('client')));
+// const app = express();
+// const { server, io } = setupHttp(app);
 
-app.get('/', function(req, res) {
-   const initialData = {
-      players: []
-   };
-   const htmlParams = {
-      content: <App {...initialData} />,
-      initialData: initialData
-   };
+// const game = gameIo(io);
+// const game2 = gameIo(io);
 
-   const result = ReactDom.renderToString(<Html {...htmlParams} />);
+// // console.log(game2);
 
-   return res.send(result);
-});
+// app.use(express.static(path.join('client')));
 
-server.listen(PORT, function() {
-   console.log(`Example app listening on port ${PORT}!`);
-});
+// app.get('/', function(req, res) {
+//    const initialData = {
+//       players: []
+//    };
+//    const htmlParams = {
+//       content: <App {...initialData} />,
+//       initialData: initialData
+//    };
+
+//    const result = ReactDom.renderToString(<Html {...htmlParams} />);
+
+//    return res.send(result);
+// });
+
+// server.listen(PORT, function() {
+//    console.log(`Example app listening on port ${PORT}!`);
+// });

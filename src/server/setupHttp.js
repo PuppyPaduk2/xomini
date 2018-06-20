@@ -9,7 +9,7 @@ export default function(app) {
       wsEngine: 'ws'
    });
 
-   players(serverIo);
+   // players(serverIo);
 
    return {
       server: server,
