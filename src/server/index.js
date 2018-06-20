@@ -1,40 +1,39 @@
-// import path from 'path';
-// import express from 'express';
-// import React from 'react';
-// import ReactDom from 'react-dom/server';
-// import setupHttp from './setupHttp';
+import gameIo from '../game.io/server';
 
-// import Html from '../client/components/Html/Html';
-// import App from '../client/components/App/App';
+import { Router } from 'express';
 
-// import gameIo from '../game.io/server';
+import React from 'react';
+import ReactDom from 'react-dom/server';
 
-// const PORT = 3000;
+import Html from '../client/components/Html/Html';
+import App from '../client/components/App/App';
 
-// const app = express();
-// const { server, io } = setupHttp(app);
+const defRouter = new Router();
 
-// const game = gameIo(io);
-// const game2 = gameIo(io);
+defRouter.get('/', function(req, res) {
+   const initialData = {
+      players: []
+   };
+   const htmlParams = {
+      content: <App {...initialData} />,
+      initialData: initialData
+   };
 
-// // console.log(game2);
+   const result = ReactDom.renderToString(<Html {...htmlParams} />);
 
-// app.use(express.static(path.join('client')));
+   return res.send(result);
+});
 
-// app.get('/', function(req, res) {
-//    const initialData = {
-//       players: []
-//    };
-//    const htmlParams = {
-//       content: <App {...initialData} />,
-//       initialData: initialData
-//    };
+const game = gameIo({
+   static: ['client'],
 
-//    const result = ReactDom.renderToString(<Html {...htmlParams} />);
+   routers: [defRouter],
 
-//    return res.send(result);
-// });
+   events: {
+      run: function() {
+         console.log(`Example app listening on port ${this.port}!`);
+      }
+   }
+});
 
-// server.listen(PORT, function() {
-//    console.log(`Example app listening on port ${PORT}!`);
-// });
+game.run();

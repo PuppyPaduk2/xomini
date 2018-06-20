@@ -3,11 +3,11 @@ import { GameIoServer } from './server/GameIoServer';
 let game;
 
 /**
- * @param {Socket.io} io
+ * @param {Object} options
  */
-export default (io) => {
+export default (options) => {
    if (!game) {
-      game = new GameIoServer(io);
+      game = new GameIoServer(options);
    }
 
    return game;

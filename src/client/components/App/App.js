@@ -26,7 +26,7 @@ export default class App extends Component {
       this.setState(params);
 
       console.log(this.state);
-   };
+   };s
 
    initConnectionError = message => {
       if (!this.state.begin) {
@@ -41,20 +41,20 @@ export default class App extends Component {
 
       // params.room = [path, _.camelCase(params.room)].join('-');
 
-      sockets.players.emit('signIn', params);
+      // sockets.players.emit('signIn', params);
 
-      if (!sockets.room) {
-         room = createSocket(params.room, {
-            query: { name: params.name }
-         });
+      // if (!sockets.room) {
+      //    room = createSocket(params.room, {
+      //       query: { name: params.name }
+      //    });
 
-         room.on('initConnection', this.initConnection);
-         room.on('initConnectionError', this.initConnectionError);
-         room.on('initDisconnect', this.setState.bind(this));
-         room.on('begin', this.setState.bind(this));
+      //    room.on('initConnection', this.initConnection);
+      //    room.on('initConnectionError', this.initConnectionError);
+      //    room.on('initDisconnect', this.setState.bind(this));
+      //    room.on('begin', this.setState.bind(this));
 
-         sockets.room = room;
-      }
+      //    sockets.room = room;
+      // }
    };
 
    onClickBegin = () => {
