@@ -1,15 +1,18 @@
-import Http from 'http';
-import Io from 'socket.io';
+import http from 'http';
+import io from 'socket.io';
 import players from './http/players';
 
 export default function(app) {
-   const http = Http.Server(app);
-   const io = Io(http);
+   const server = http.Server(app);
+   const serverIo = new io(server, {
+      serveClient: false,
+      wsEngine: 'ws'
+   });
 
-   players(io);
+   players(serverIo);
 
    return {
-      http: http,
-      io: io
+      server: server,
+      io: serverIo
    };
 };

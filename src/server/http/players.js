@@ -13,7 +13,8 @@ function signIn(io, socket, params) {
             namespace.state = game.defaultState();
          },
 
-         connection: (namespace, socket) => {
+         connection: args => {
+            const { socket, namespace } = args;
             const state = namespace.state;
 
             socket.on('begin', () => {
@@ -29,7 +30,8 @@ function signIn(io, socket, params) {
             return game.players(state, common.getSocketsParams(namespace));
          },
 
-         disconnect: namespace => {
+         disconnect: args => {
+            const { namespace } = args;
             const state = namespace.state;
 
             return game.players(state, common.getSocketsParams(namespace));
@@ -41,9 +43,12 @@ function signIn(io, socket, params) {
 
 export default function(io) {
    const players = common.namespace(io, path, {
-      connection: (namespace, socket) => {
+
+      connection: params => {
+         const socket = params.socket;
          socket.on('signIn', signIn.bind(this, io, socket));
       }
+
    });
 
    return players;
