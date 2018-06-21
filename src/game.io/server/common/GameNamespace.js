@@ -1,5 +1,4 @@
 import Namespace from './Namespace';
-
 /**
  * Класс для работы игровым пространство сокетов
  */
@@ -20,7 +19,7 @@ export default class GameNamespace extends Namespace {
 
       this.stateProps = options.stateProps instanceof Array
          ? options.stateProps
-         : ['begin', 'end', 'players'];
+         : ['begin', 'end', 'players', '_sendState'];
 
       this.on({
          connection: this._sendState,
@@ -28,6 +27,7 @@ export default class GameNamespace extends Namespace {
          getSocketParams: this._getSocketParams
       });
    };
+
    get state() {
       return this.stateProps.reduce((result, nameProp) => {
          result[nameProp] = this[nameProp];
