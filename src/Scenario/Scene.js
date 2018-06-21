@@ -7,12 +7,10 @@ export default class Scene extends State {
     * @param {Object} handlersOnce
     */
    constructor(handlers, handlersOnce) {
-      const values = {
+      super({
          begin: false,
          end: false
-      };
-
-      super(values, handlers, handlersOnce);
+      }, handlers, handlersOnce);
    };
 
    get begin() {
