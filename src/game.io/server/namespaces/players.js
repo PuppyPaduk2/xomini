@@ -1,9 +1,13 @@
-import common from '../common';
+import Namespace from '../common/Namespace';
+import GameNamespace from '../common/GameNamespace';
+import CONST from '../../common/const';
 
-const NAMESPANCE_PLAYERS = '/players';
+function signIn(params) {
+   const room = params.room;
 
-function signIn(io, socket, params) {
-   console.log('signIn >>> ', params);
+   if (typeof room === 'string' && room !== '') {
+      const game = new GameNamespace(this.io, CONST.PLAYER_ROOM(room));
+   }
 }
 
 /**
@@ -11,12 +15,11 @@ function signIn(io, socket, params) {
  * @param {Socket.io} io
  */
 export default function(io) {
-   return common.namespace(io, NAMESPANCE_PLAYERS, {
-
-      connection: params => {
-         const socket = params.socket;
-         socket.on('signIn', signIn.bind(this, io, socket));
+   return new Namespace(io, CONST.NAMESPANCE_PLAYERS, {
+      events: {
+         connection: function(socket) {
+            socket.on('signin', signIn.bind(this));
+         }
       }
-
    });
 }

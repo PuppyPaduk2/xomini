@@ -9,19 +9,20 @@ function addEvent(events, name, callback) {
    }
 
    if (callback instanceof Function
-   || callback instanceof Array) {
+      || callback instanceof Array) {
       events[name].push(callback);
    }
 }
 
 export default class Notify {
-   _events = {};
 
    /**
     * @param {Object} options
     */
    constructor(options) {
       options = options instanceof Object ? options : {};
+
+      this._events = {};
 
       if (options.events instanceof Object) {
          this.on(options.events);
@@ -79,12 +80,16 @@ export default class Notify {
     */
    emit(name, ...args) {
       const callbacks = this._events[name];
+      let result;
       let callback;
+      let callbackRes;
 
       if (callbacks && callbacks.length) {
          callbacks.forEach(callback => {
             if (callback instanceof Function) {
-               callback.apply(this, args);
+               callbackRes = callback.apply(this, args);
+
+               result = callbackRes !== undefined ? callbackRes : result;
             } else if (callback instanceof Array) {
                const callbacksRes = [];
                let cback;
@@ -93,12 +98,13 @@ export default class Notify {
                   cback = callback[index];
 
                   if (cback instanceof Function) {
-                     const callbackRes = cback.apply(this, args.concat(callbacksRes));
+                     callbackRes = cback.apply(this, args.concat(callbacksRes));
 
                      if (callbackRes instanceof Error) {
                         break;
                      } else if (callbackRes !== undefined) {
                         callbacksRes.push(callbackRes);
+                        result = callbackRes;
                      }
                   } else if (cback !== undefined) {
                      callbacksRes.push(cback);
@@ -108,7 +114,7 @@ export default class Notify {
          });
       }
 
-      return this;
+      return result;
    };
 
    /**

@@ -1,4 +1,4 @@
-import { GameIoServer } from './server/GameIoServer';
+import GameIoServer from './server/GameIoServer';
 
 let game;
 

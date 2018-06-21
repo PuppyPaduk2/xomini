@@ -34,9 +34,11 @@ notify.on({
    init: func
 });
 
-notify.emit('init').off('init', func).pipe(() => {
+notify.emit('init');
+notify.off('init', func).pipe(() => {
    console.log(' ');
-}).emit('init').pipe(() => {
+});
+notify.emit('init').pipe(() => {
    console.log('>>> end 1');
    console.log(' ');
 });
@@ -49,8 +51,10 @@ func = [function(...args) {
    console.log('init24', args);
 }, func];
 
-notify.on('init', func).emit('init').off('init', func).pipe(() => {
+notify.on('init', func).emit('init')
+notify.off('init', func).pipe(() => {
    console.log(' ');
-}).emit('init').pipe(() => {
+});
+notify.emit('init').pipe(() => {
    console.log(' ');
 });

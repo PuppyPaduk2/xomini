@@ -5,6 +5,8 @@ import colors from './colors';
 import { game } from '../../game';
 import _ from 'lodash';
 
+import GameIoClient from '../../../game.io/client/GameIoClient';
+
 import PlayerIn from '../PlayerIn/PlayerIn';
 import GameSpace from '../GameSpace/GameSpace';
 import Button from '@material-ui/core/Button';
@@ -18,15 +20,22 @@ export default class App extends Component {
    }, game.defaultState());
 
    componentDidMount() {
-      this.sockets = { players: createSocket(path) };
+      this.game = new GameIoClient({
+         events: {
+
+         }
+      });
+
+      // this.sockets = { players: createSocket(path) };
    };
 
    initConnection = params => {
-      params.isSignIn = true;
-      this.setState(params);
+      console.log(params);
+      // params.isSignIn = true;
+      // this.setState(params);
 
-      console.log(this.state);
-   };s
+      // console.log(this.state);
+   };
 
    initConnectionError = message => {
       if (!this.state.begin) {
@@ -36,22 +45,26 @@ export default class App extends Component {
    };
 
    signIn = (params) => {
-      const sockets = this.sockets;
-      let room;
+      this.game.signIn(params);
 
-      // params.room = [path, _.camelCase(params.room)].join('-');
+      // const sockets = this.sockets;
+      // let room;
 
-      // sockets.players.emit('signIn', params);
+      // // params.room = [path, _.camelCase(params.room)].join('-');
+
+      // params.room = _.camelCase(params.room);
+
+      // sockets.players.emit('signin', params);
 
       // if (!sockets.room) {
-      //    room = createSocket(params.room, {
+      //    room = createSocket([path, _.camelCase(params.room)].join('/'), {
       //       query: { name: params.name }
       //    });
 
-      //    room.on('initConnection', this.initConnection);
-      //    room.on('initConnectionError', this.initConnectionError);
-      //    room.on('initDisconnect', this.setState.bind(this));
-      //    room.on('begin', this.setState.bind(this));
+      //    room.on('socket:connection', this.initConnection);
+      //    // room.on('initConnectionError', this.initConnectionError);
+      //    // room.on('initDisconnect', this.setState.bind(this));
+      //    // room.on('begin', this.setState.bind(this));
 
       //    sockets.room = room;
       // }
