@@ -70,4 +70,11 @@ export default class State extends Notify {
       return this._change;
    };
 
+   /**
+    * @returns {State}
+    */
+   clone() {
+      return new State(this.values);
+   };
+
 }

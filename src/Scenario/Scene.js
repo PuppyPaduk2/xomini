@@ -1,39 +1,92 @@
+import Notify from './Notify';
 import State from './State';
 
-export default class Scene extends State {
+/**
+ * @param {String} nameProp
+ * @param {?} value
+ * @param {Fuction} [callback]
+ */
+function setValue(nameProp, value, callback) {
+   const pNameProp = '_' + nameProp;
+
+   if (this[pNameProp] !== value) {
+      this[pNameProp] = value;
+
+      if (this.emit) {
+         this.emit(nameProp);
+      }
+
+      if (callback instanceof Function) {
+         callback.apply(this, arguments);
+      }
+   }
+};
+
+export default class Scene extends Notify {
 
    /**
-    * @param {Object} handlers
-    * @param {Object} handlersOnce
+    * @param {State} state
+    * @param {Function} executor
+    * @param {Object} options
+    * @param {Object} [options.handlers]
+    * @param {Object} [options.handlersOnce]
     */
-   constructor(handlers, handlersOnce) {
-      super({
-         begin: false,
-         end: false
-      }, handlers, handlersOnce);
-   };
+   constructor(state, executor, options) {
+      options = options instanceof Object ? options : {};
 
-   get begin() {
-      return this.values.begin;
-   };
+      super(options.handlers, options.handlersOnce);
 
-   get end() {
-      return this.values.end;
-   };
-
-   get pending() {
-      return this.values.begin
-         && !this.values.end;
-   };
-
-   next = () => {
-      if (!this.begin) {
-         this.values = { begin: true };
-         this.emit('begin');
-      } else if (!this.end) {
-         this.values = { end: true };
-         this.emit('end');
+      if (state instanceof State) {
+         this.state = {
+            begin: state.clone(),
+            current: state,
+            end: null
+         };
       }
+
+      this.executor = executor;
+   };
+
+   /**
+    * @param {Boolean} value
+    */
+   set begin(value) {
+      const then = () => { this.end = true; };
+
+      setValue.call(this, 'begin', value);
+
+      if (this.executor instanceof Function) {
+         this.action = new Promise(this.executor.bind(this, this.state.current));
+         this.action.then(then, then);
+      } else {
+         this.end = true;
+      }
+   };
+
+   /**
+    * @returns {Boolean}
+    */
+   get begin() {
+      return !!this._begin;
+   };
+
+   /**
+    * @param {Boolean} value
+    */
+   set end(value) {
+      this.state.end = this.state.current.clone();
+      setValue.call(this, 'end', value);
+   };
+
+   /**
+    * @returns {Boolean}
+    */
+   get end() {
+      return !!this._end;
+   };
+
+   run() {
+      this.begin = true;
    };
 
 }
