@@ -47,6 +47,10 @@ export default class Notify {
       if (Object.keys(handlers)) {
          this.on(handlers);
       }
+
+      if (Object.keys(handlersOnce)) {
+         this.once(handlersOnce);
+      }
    };
 
    /**
