@@ -3,24 +3,6 @@ import Notify from './Notify';
 export default class State extends Notify {
 
    /**
-    * @param {Object} values
-    * @param {Object} handlers
-    * @param {Object} handlersOnce
-    */
-   constructor(values, handlers, handlersOnce) {
-      super(handlers, handlersOnce);
-
-      this._prev = {};
-      this._change = {};
-      this._values = {};
-
-      values = values instanceof Object ? values : {};
-
-      this.format = Object.keys(values);
-      this.values = values;
-   };
-
-   /**
     * @param {Object}
     */
    set values(values) {
@@ -68,6 +50,24 @@ export default class State extends Notify {
     */
    get change() {
       return this._change;
+   };
+
+   /**
+    * @param {Object} values
+    * @param {Object} handlers
+    * @param {Object} handlersOnce
+    */
+   constructor(values, handlers, handlersOnce) {
+      super(handlers, handlersOnce);
+
+      this._prev = {};
+      this._change = {};
+      this._values = {};
+
+      values = values instanceof Object ? values : {};
+
+      this.format = Object.keys(values);
+      this.values = values;
    };
 
    /**

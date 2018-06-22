@@ -12,7 +12,7 @@ function addHandler(handlers, name, callback) {
       || callback instanceof Array) {
       handlers[name].push(callback);
    }
-}
+};
 
 /**
  * @param {Object} context
@@ -29,7 +29,7 @@ function on(context, name, callback) {
    Object.keys(addHandlers).forEach(key => {
       addHandler(context, key, addHandlers[key]);
    });
-}
+};
 
 export default class Notify {
 
@@ -150,6 +150,25 @@ export default class Notify {
       }
 
       return this;
+   };
+
+   /**
+    * @param {String} nameProp
+    * @param {?} value
+    * @param {Fuction} [callback]
+    */
+   setProp(nameProp, value, callback) {
+      const pNameProp = '_' + nameProp;
+
+      if (this[pNameProp] !== value) {
+         this[pNameProp] = value;
+   
+         this.emit(nameProp, value);
+
+         if (callback instanceof Function) {
+            callback.apply(this, arguments);
+         }
+      }
    };
 
 }
