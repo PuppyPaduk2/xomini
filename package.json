@@ -11,7 +11,10 @@
     "client-watch": "webpack --watch",
     "server-build": "gulp convert",
     "server-watch": "gulp convert-watch",
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open",
+    "mocha": "./node_modules/.bin/mocha",
+    "mocha:watch": "mocha -w",
+    "mocha:watch:scenario": "mocha -w ./dist/Scenario/test.js"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +33,7 @@
     "gulp-less": "^3.5.0",
     "less": "^2.7.3",
     "less-loader": "^4.1.0",
+    "mocha": "^5.2.0",
     "style-loader": "^0.21.0",
     "webpack": "^4.12.0",
     "webpack-cli": "^3.0.4",

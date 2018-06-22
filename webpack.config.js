@@ -19,5 +19,12 @@ module.exports = [
       stats: {
          warnings: false
       }
+   }),
+
+   defaultConfig({
+      dir: 'Scenario',
+      entry: {
+         test: 'test/index.js'
+      }
    })
 ];
