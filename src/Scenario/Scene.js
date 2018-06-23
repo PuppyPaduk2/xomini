@@ -7,17 +7,33 @@ function setValue() {
 export default class Scene extends Notify {
 
    /**
+    * @param {State} value
+    */
+   set state(value) {
+      if (value instanceof State) {
+         this._state = {
+            begin: value.clone(),
+            current: value,
+            end: null
+         };
+      }
+   };
+
+   get state() {
+      return this._state || null;
+   };
+
+   /**
     * @param {Boolean} value
     */
    set begin(value) {
       value = !!value;
 
-      if (value) {
-         const then = () => { this.end = true; };
-
+      if (value && !this._begin) {
          this.setProp('begin', value);
 
-         if (this.executor instanceof Function) {
+         if (this.state && this.executor instanceof Function) {
+            const then = () => { this.end = true; };
             this.action = new Promise(this.executor.bind(this, this.state.current));
             this.action.then(then, then);
          } else {
@@ -39,10 +55,11 @@ export default class Scene extends Notify {
    set end(value) {
       value = !!value;
 
-      if (value) {
+      if (value && this.state) {
          this.state.end = this.state.current.clone();
-         this.setProp('end', value);
       }
+
+      this.setProp('end', value);
    };
 
    /**
@@ -64,14 +81,7 @@ export default class Scene extends Notify {
 
       super(options.handlers, options.handlersOnce);
 
-      if (state instanceof State) {
-         this.state = {
-            begin: state.clone(),
-            current: state,
-            end: null
-         };
-      }
-
+      this.state = state;
       this.executor = executor;
    };
 
