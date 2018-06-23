@@ -24,7 +24,8 @@ module.exports = [
    defaultConfig({
       dir: 'Scenario/test',
       entry: {
-         Notify: 'Notify.js'
+         Notify: 'Notify.js',
+         State: 'State.js'
       }
    })
 ];
