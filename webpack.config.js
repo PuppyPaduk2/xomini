@@ -22,9 +22,9 @@ module.exports = [
    }),
 
    defaultConfig({
-      dir: 'Scenario',
+      dir: 'Scenario/test',
       entry: {
-         test: 'test/index.js'
+         Notify: 'Notify.js'
       }
    })
 ];

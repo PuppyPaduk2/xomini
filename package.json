@@ -14,7 +14,7 @@
     "start": "webpack-dev-server --open",
     "mocha": "./node_modules/.bin/mocha",
     "mocha:watch": "mocha -w",
-    "mocha:watch:scenario": "mocha -w ./dist/Scenario/test.js"
+    "mocha:watch:notify": "mocha -w ./dist/Scenario/test/Notify.js"
   },
   "author": "",
   "license": "ISC",

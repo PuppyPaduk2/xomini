@@ -31,6 +31,32 @@ function on(context, name, callback) {
    });
 };
 
+/**
+ * @param {Strong} nameProp
+ * @param {String} [nameEvent]
+ * @param {Function|Function[]} callback
+ */
+function off(nameProp, nameEvent, callback) {
+   const callbacks = this[nameProp][nameEvent];
+   const isDelete = [];
+
+   if (callbacks && callbacks.length) {
+      if (callback) {
+         callbacks.forEach((cb, index) => {
+            if (cb === callback) {
+               isDelete.push(index);
+            }
+         });
+
+         this[nameProp][nameEvent] = callbacks.filter((cd, index) => {
+            return isDelete.indexOf(index) === -1;
+         });
+      } else if (nameEvent) {
+         delete this[nameProp][nameEvent];
+      }
+   }
+};
+
 export default class Notify {
 
    /**
@@ -44,11 +70,11 @@ export default class Notify {
       this._handlers = {};
       this._handlersOnce = {};
 
-      if (Object.keys(handlers)) {
+      if (Object.keys(handlers).length) {
          this.on(handlers);
       }
 
-      if (Object.keys(handlersOnce)) {
+      if (Object.keys(handlersOnce).length) {
          this.once(handlersOnce);
       }
    };
@@ -72,27 +98,16 @@ export default class Notify {
    };
 
    /**
-    * @param {String} name
+    * @param {String} [name]
     * @param {Function|Function[]} callback
     */
    off(name, callback) {
-      const callbacks = this._handlers[name];
-      const isDelete = [];
-
-      if (callbacks && callbacks.length) {
-         if (callback) {
-            callbacks.forEach((cb, index) => {
-               if (cb === callback) {
-                  isDelete.push(index);
-               }
-            });
-
-            this._handlers[name] = callbacks.filter((cd, index) => {
-               return isDelete.indexOf(index) === -1;
-            });
-         } else {
-            delete this._handlers[name];
-         }
+      if (typeof name === 'string') {
+         off.call(this, '_handlers', name, callback);
+         off.call(this, '_handlersOnce', name, callback);
+      } else {
+         this._handlers = {};
+         this._handlersOnce = {};
       }
 
       return this;
@@ -166,7 +181,7 @@ export default class Notify {
 
       if (this[pNameProp] !== value) {
          this[pNameProp] = value;
-   
+
          this.emit(nameProp, value);
 
          if (callback instanceof Function) {
