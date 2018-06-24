@@ -77,7 +77,12 @@ export default class Scenario extends Notify {
 
       if (value) {
          this.setProp('begin', value);
-         this.scene = this.scenes[0];
+
+         if (this.scenes.length) {
+            this.scene = this.scenes[0];
+         } else {
+            this.end = true;
+         }
       }
    };
 

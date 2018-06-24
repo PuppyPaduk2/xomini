@@ -26,7 +26,8 @@ module.exports = [
       entry: {
          Notify: 'Notify.js',
          State: 'State.js',
-         Scene: 'Scene.js'
+         Scene: 'Scene.js',
+         Scenario: 'Scenario.js'
       }
    })
 ];
