@@ -2,6 +2,13 @@ import Notify from './Notify';
 import State from './State';
 import Scene from './Scene';
 
+/**
+ * @
+ */
+function setOneScene(scene) {
+
+};
+
 export default class Scenario extends Notify {
 
    /**
@@ -35,11 +42,25 @@ export default class Scenario extends Notify {
    };
 
    /**
-    * @param {Function} scene
+    * @param {Function|Function[]|Function[][]} scene
     */
    set scene(value) {
-      if (value instanceof Function) {
-         this._scene = new Scene(this.state, value);
+      const isFunc = value instanceof Function;
+      const isArr = value instanceof Array;
+
+      if (isFunc || isArr) {
+         if (isFunc) {
+            this._scene = new Scene(this.state, value);
+         } else {
+            this._scene = new Scene(this.state);
+
+            value.forEach(handlers => {
+               this._scene.on('values', handlers);
+            });
+         }
+
+         this.__scene = value;
+
          this._scene.run();
          this._scene.once('end', () => {
             const nextScene = this.nextScene;
@@ -50,6 +71,8 @@ export default class Scenario extends Notify {
                this.end = true;
             }
          });
+
+         this.emit('scene', this._scene);
       }
    };
 
@@ -65,7 +88,7 @@ export default class Scenario extends Notify {
     */
    get nextScene() {
       const scenes = this.scenes;
-      const index = this.scenes.indexOf(this.scene.executor);
+      const index = this.scenes.indexOf(this.__scene);
       return scenes[index + 1];
    };
 

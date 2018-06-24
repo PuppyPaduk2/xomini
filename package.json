@@ -17,7 +17,9 @@
     "mocha:watch:notify": "mocha -w ./dist/Scenario/test/Notify.js",
     "mocha:watch:state": "mocha -w ./dist/Scenario/test/State.js",
     "mocha:watch:scene": "mocha -w ./dist/Scenario/test/Scene.js",
-    "mocha:watch:scenario": "mocha -w ./dist/Scenario/test/Scenario.js"
+    "mocha:watch:scenario": "mocha -w ./dist/Scenario/test/Scenario.js",
+    "test:scenaex": "mocha -w ./dist/Scenario/test/SceneExecutor.js",
+    "test:scenarioex": "mocha -w ./dist/Scenario/test/ScenarioExample.js"
   },
   "author": "",
   "license": "ISC",
@@ -28,6 +30,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "colors": "^1.3.0",
     "css-loader": "^0.28.11",
     "dotenv": "^6.0.0",
     "extract-text-webpack-plugin": "^3.0.2",

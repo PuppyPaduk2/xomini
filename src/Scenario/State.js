@@ -24,10 +24,12 @@ export default class State extends Notify {
          });
       }
 
-      this.change = change;
+      if (Object.keys(change).length) {
+         this.change = change;
 
-      this.emit('prev', this._prev);
-      this.emit('values', this.values);
+         this.emit('prev', this._prev);
+         this.emit('values', this.values);
+      }
    };
 
    /**

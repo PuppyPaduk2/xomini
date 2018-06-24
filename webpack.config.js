@@ -27,7 +27,9 @@ module.exports = [
          Notify: 'Notify.js',
          State: 'State.js',
          Scene: 'Scene.js',
-         Scenario: 'Scenario.js'
+         Scenario: 'Scenario.js',
+         SceneExecutor: 'SceneExecutor.js',
+         ScenarioExample: 'ScenarioExample.js'
       }
    })
 ];

@@ -11,16 +11,31 @@ export default class Scene extends Notify {
     */
    set state(value) {
       if (value instanceof State) {
-         this._state = {
-            begin: value.clone(),
-            current: value,
-            end: null
-         };
+         this._state = value;
       }
    };
 
+   /**
+    * @returns {State}
+    */
    get state() {
       return this._state || null;
+   };
+
+   /**
+    * @param {Function} value
+    */
+   set executor(value) {
+      if (value instanceof Function) {
+         this._executor = value;
+      }
+   };
+
+   /**
+    * @returns {Function}
+    */
+   get executor() {
+      return this._executor;
    };
 
    /**
@@ -32,9 +47,21 @@ export default class Scene extends Notify {
       if (value && !this._begin) {
          this.setProp('begin', value);
 
-         if (this.state && this.executor instanceof Function) {
+         if (this.state) {
             const then = () => { this.end = true; };
-            this.action = new Promise(this.executor.bind(this, this.state.current));
+
+            this.action = new Promise((res, rej) => {
+               const resolve = this._resolve.bind(this, res);
+               const reject = this._reject.bind(this, rej);
+
+               this.__stateOnValues = this._stateOnValues.bind(this, this.state, reject, resolve);
+               this.state.on('values', this.__stateOnValues);
+
+               if (this.executor) {
+                  this.executor.call(this, this.state, resolve, reject);
+               }
+            });
+
             this.action.then(then, then);
          } else {
             this.end = true;
@@ -56,7 +83,9 @@ export default class Scene extends Notify {
       value = !!value;
 
       if (value && this.state) {
-         this.state.end = this.state.current.clone();
+         this.state.off('values', this.__stateOnValues);
+         this.__stateOnValues = undefined;
+         this.state = this.state.clone();
       }
 
       this.setProp('end', value);
@@ -87,6 +116,23 @@ export default class Scene extends Notify {
 
    run() {
       this.begin = true;
+   };
+
+   _resolve = (resolve) => {
+      this.emit('resolve');
+      resolve();
+      return new Error('resolve');
+   };
+
+   _reject = (reject) => {
+      this.emit('reject');
+      reject();
+      return new Error('reject');
+   };
+
+   _stateOnValues = (...args) => {
+      args = args.reverse();
+      this.emit('values', ...args);
    };
 
 }

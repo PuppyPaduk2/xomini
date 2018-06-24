@@ -28,10 +28,7 @@ describe('Scene', () => {
          });
 
          it('check props', () => {
-            if (sWithState.state === null
-               || sWithState.state.begin === null
-               || sWithState.state.current === null
-               || sWithState.state.end !== null) {
+            if (!(sWithState.state instanceof State)) {
                throw new Error();
             }
          });
@@ -45,7 +42,7 @@ describe('Scene', () => {
          });
 
          it('check props', () => {
-            if (sWithExecutor.state instanceof Object
+            if (sWithExecutor.state instanceof State
                || !(sWithExecutor.executor instanceof Function)) {
                throw new Error();
             }
@@ -64,10 +61,7 @@ describe('Scene', () => {
          it('check props', () => {
             const state = sWith.state;
 
-            if (!(state instanceof Object)
-               || !(state.begin instanceof State)
-               || !(state.current instanceof State)
-               || state.end !== null
+            if (!(sWithState.state instanceof State)
                || !(sWith.executor instanceof Function)) {
                throw new Error();
             }
@@ -99,7 +93,7 @@ describe('Scene', () => {
 
          it('check params', () => {
             if (isBeginEnd(sWithState)
-               || !(sWithState.state.end instanceof State)) {
+               || !(sWithState.state instanceof State)) {
                throw new Error();
             }
          });
