@@ -161,17 +161,6 @@ export default class Notify {
    };
 
    /**
-    * @param {Function} callback
-    */
-   pipe(callback) {
-      if (callback instanceof Function) {
-         callback.call(this);
-      }
-
-      return this;
-   };
-
-   /**
     * @param {String} nameProp
     * @param {?} value
     * @param {Fuction} [callback]
@@ -188,6 +177,13 @@ export default class Notify {
             callback.apply(this, arguments);
          }
       }
+   };
+
+   /**
+    * @param {String} nameProp
+    */
+   getProp(nameProp) {
+      return this['_' + nameProp];
    };
 
 }

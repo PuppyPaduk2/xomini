@@ -1,162 +1,233 @@
 import Notify from '../Notify';
+import log from '../log';
+import colors from 'colors';
 
 let notify;
 
-describe('Notify', () => {
+let count;
 
-   describe('#new()', () => {
-      const params = [
-         {
-            init: () => { },
-            render: [
-               () => { },
-               () => { }
-            ]
-         }, {
-            init: [
-               () => { },
-               () => { }
-            ],
-            render: () => { }
-         }
-      ];
+function defCount() {
+   count = {
+      event1: 0,
+      event21: 0,
+      event22: 0
+   };
+};
 
-      it('without params', () => {
-         notify = new Notify();
-      });
+function getEvents(key) {
+   return {
+      event1: () => { count.event1++ },
+      event2: [
+         () => { count.event21++ },
+         () => { count.event22++ }
+      ]
+   };
+};
 
-      it('with params:on', () => {
-         new Notify(params[0]);
-      });
+function emit() {
+   notify.emit('event1');
+   notify.emit('event2');
+   notify.emit('event1');
+   notify.emit('event2');
+};
 
-      it('with params:once', () => {
-         new Notify(null, params[0]);
-      });
+function subscribeEvent1() {
+   const event1 = () => { count.event1++ };
 
-      it('with params:all', () => {
-         new Notify(...params);
-      });
+   notify = new Notify({ event1: event1 }, { event1: event1 });
+
+   notify.on('event1', event1);
+   notify.on({
+      event1: event1
+   });
+   notify.once('event1', event1);
+   notify.once({
+      event1: event1
    });
 
-   ['on', 'once'].forEach(method => {
-      describe('#' + method + '()', () => {
-         const nameEvent = 'event-' + method;
-         const nameEvent1 = 'many-event-1-' + method;
-         const nameEvent2 = 'many-event-2-' + method;
+   return event1;
+};
 
-         describe('one event', () => {
-            it('simple', () => {
-               notify[method](nameEvent, () => { });
-            });
+function onAfterInit() {
+   notify.on('event1', () => { count.event1++ });
+   notify.on(getEvents('on'));
 
-            it('set', () => {
-               notify[method](nameEvent, [
-                  () => { },
-                  () => { }
-               ]);
-            });
+   notify.once('event1', () => { count.event1++ });
+   notify.once(getEvents('once'));
+};
 
-            it('set with return error', () => {
-               notify[method](nameEvent, [
-                  () => { return Error(); },
-                  () => { console.log('set with return error!'); }
-               ]);
-            });
+describe('Notify', () => {
+   it('subscribe' + ' on'.green + ' initialize'.grey, () => {
+      defCount();
 
-            it('emit', () => {
-               notify.emit(nameEvent);
-            });
-         });
+      notify = new Notify(getEvents('on'), getEvents('once'));
 
-         describe('many event', () => {
-            it('simple', () => {
-               const events = {};
-               events[nameEvent1] = () => { };
-               events[nameEvent2] = () => { };
-               notify[method](events);
-            });
+      emit();
 
-            it('set', () => {
-               const events = {};
-               events[nameEvent1] = [
-                  () => { },
-                  () => { }
-               ];
-               notify[method](events);
-            });
+      if (count.event1 !== 3 || count.event21 !== 3 || count.event22 !== 3) {
+         throw new Error();
+      }
+   });
 
-            it('set with return error', () => {
-               const events = {};
-               events[nameEvent1] = [
-                  () => { return Error(); },
-                  () => { console.log('error-' + nameEvent2); }
-               ];
-               notify[method](events);
-            });
+   it('subscribe' + ' after'.green + ' initialize'.grey, () => {
+      defCount();
 
-            it('emit', () => {
-               notify.emit(nameEvent1);
-               notify.emit(nameEvent2);
-            });
-         });
-      });
+      notify = new Notify();
+
+      onAfterInit();
+
+      emit();
+
+      if (count.event1 !== 6 || count.event21 !== 3 || count.event22 !== 3) {
+         throw new Error();
+      }
    });
 
    describe('#off()', () => {
-      ['on', 'once'].forEach(key => {
-         describe(key, () => {
-            const keyEvent = key + '-event';
-            const keyCallback = key + '-callback';
-            const keyCallbackSet = key + '-callbackSet';
+      it('all', () => {
+         defCount();
 
-            it('event', () => {
-               notify[key](keyEvent, () => { console.log(keyEvent); });
-               notify.off(keyEvent);
-            });
+         notify = new Notify(getEvents('on'), getEvents('once'));
 
-            it('callback', () => {
-               const callback = () => { console.log(keyCallback); };
-               notify[key](keyCallback, callback);
-               notify.off(keyCallback, callback);
-            });
+         onAfterInit();
 
-            it('callback set', () => {
-               const callbackSet = [
-                  () => { console.log(keyCallbackSet + ':1'); },
-                  () => { console.log(keyCallbackSet + ':1'); }
-               ];
-               notify[key](keyCallbackSet, callbackSet);
-               notify.off(keyCallbackSet, callbackSet);
-            });
+         notify.off();
 
-            it('emit', () => {
-               notify.emit(keyEvent);
-               notify.emit(keyCallback);
-               notify.emit(keyCallbackSet);
-            });
-         });
+         emit();
+
+         if (count.event1 !== 0 || count.event21 !== 0 || count.event22 !== 0) {
+            throw new Error();
+         }
       });
 
-      it('all', () => {
-         const onAll = 'off-on-all';
-         const onceAll = 'off-once-all';
+      it('event', () => {
+         defCount();
 
-         notify.on(onAll, () => { console.log(onAll) });
-         notify.on(onceAll, () => { console.log(onceAll) });
-         notify.off(onAll);
-         notify.off(onceAll);
-         notify.emit(onAll);
-         notify.emit(onceAll);
+         subscribeEvent1();
+
+         notify.off('event1');
+
+         emit();
+
+         if (count.event1 !== 0) {
+            throw new Error();
+         }
+      });
+
+      it('handler', () => {
+         defCount();
+
+         const event1 = subscribeEvent1();
+
+         notify.off('event1', event1);
+
+         emit();
+
+         if (count.event1 !== 0) {
+            throw new Error();
+         }
+      });
+
+      it('handler set', () => {
+         defCount();
+
+         const eventSet = [
+            () => { count.event1++ },
+            () => { count.event1++ }
+         ];
+
+         notify = new Notify({ event1: eventSet }, { event1: eventSet });
+
+         notify.on('event1', eventSet);
+         notify.on({ event1: eventSet });
+
+         notify.once('event1', eventSet);
+         notify.once({ event1: eventSet });
+
+         notify.off('event1', eventSet);
+
+         emit();
+
+         if (count.event1 !== 0) {
+            throw new Error();
+         }
+      });
+
+   });
+
+   describe('#emit()', () => {
+      it('without error', () => {
+         defCount();
+
+         notify = new Notify({
+            event1: [
+               x => { count.event1 = count.event1 + x },
+               x => { count.event1 = count.event1 + x }
+            ]
+         });
+
+         notify.emit('event1', 1);
+
+         if (count.event1 !== 2) {
+            throw new Error();
+         }
+      });
+
+      it('with error', () => {
+         defCount();
+
+         notify = new Notify({
+            event1: [
+               x => { count.event1 = count.event1 + x; return new Error(); },
+               x => { count.event1 = count.event1 + x }
+            ]
+         });
+
+         notify.emit('event1', 1);
+
+         // console.log(count)
+
+         if (count.event1 !== 1) {
+            throw new Error();
+         }
+      });
+
+      it('once', () => {
+         defCount();
+
+         notify = new Notify(null, {
+            event1: [
+               x => { count.event1++ },
+               x => { count.event1++ }
+            ]
+         });
+
+         emit();
+
+         if (count.event1 !== 2) {
+            throw new Error();
+         }
       });
    });
 
-   describe('#setProp()', () => {
-      it('deaftul', () => {
-         notify.setProp('begin', true);
+   it('#setProp()', () => {
+      defCount();
+
+      notify = new Notify({
+         begin: () => { count.event1++ }
       });
 
-      it('with callback', () => {
-         notify.setProp('begin', true, () => { });
-      });
+      notify.setProp('begin', 100);
+
+      if (count.event1 !== 1 || notify._begin !== 100) {
+         throw new Error();
+      }
+   });
+
+
+   it('#getProp()', () => {
+      if (notify.getProp('begin') !== 100) {
+         throw new Error();
+      }
    });
 });

@@ -14,12 +14,7 @@
     "start": "webpack-dev-server --open",
     "mocha": "./node_modules/.bin/mocha",
     "mocha:watch": "mocha -w",
-    "mocha:watch:notify": "mocha -w ./dist/Scenario/test/Notify.js",
-    "mocha:watch:state": "mocha -w ./dist/Scenario/test/State.js",
-    "mocha:watch:scene": "mocha -w ./dist/Scenario/test/Scene.js",
-    "mocha:watch:scenario": "mocha -w ./dist/Scenario/test/Scenario.js",
-    "test:scenaex": "mocha -w ./dist/Scenario/test/SceneExecutor.js",
-    "test:scenarioex": "mocha -w ./dist/Scenario/test/ScenarioExample.js"
+    "test:watch": "mocha -w ./dist/Scenario/test.js"
   },
   "author": "",
   "license": "ISC",

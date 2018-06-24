@@ -22,14 +22,9 @@ module.exports = [
    }),
 
    defaultConfig({
-      dir: 'Scenario/test',
+      dir: 'Scenario',
       entry: {
-         Notify: 'Notify.js',
-         State: 'State.js',
-         Scene: 'Scene.js',
-         Scenario: 'Scenario.js',
-         SceneExecutor: 'SceneExecutor.js',
-         ScenarioExample: 'ScenarioExample.js'
+         test: 'test'
       }
    })
 ];
