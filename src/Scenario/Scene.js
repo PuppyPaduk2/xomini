@@ -1,16 +1,13 @@
 import Notify from './Notify';
 import State from './State';
 
-function setValue() {
-};
-
 export default class Scene extends Notify {
 
    /**
     * @param {State} value
     */
    set state(value) {
-      if (value instanceof State) {
+      if (!this._state && value instanceof State) {
          this._state = value;
       }
    };
@@ -23,49 +20,33 @@ export default class Scene extends Notify {
    };
 
    /**
-    * @param {Function} value
+    * @param {Object} values
     */
-   set executor(value) {
-      if (value instanceof Function) {
-         this._executor = value;
+   set values(values) {
+      if (values instanceof Object && this.state
+         && this.begin && !this.end) {
+         this.state.values = values;
       }
    };
 
    /**
-    * @returns {Function}
+    * @returns {Object}
     */
-   get executor() {
-      return this._executor;
+   get values() {
+      if (this.state) {
+         return this.state.values;
+      } else {
+         return {};
+      }
    };
 
    /**
     * @param {Boolean} value
     */
    set begin(value) {
-      value = !!value;
-
-      if (value && !this._begin) {
-         this.setProp('begin', value);
-
-         if (this.state) {
-            const then = () => { this.end = true; };
-
-            this.action = new Promise((res, rej) => {
-               const resolve = this._resolve.bind(this, res);
-               const reject = this._reject.bind(this, rej);
-
-               this.__stateOnValues = this._stateOnValues.bind(this, this.state, reject, resolve);
-               this.state.on('values', this.__stateOnValues);
-
-               if (this.executor) {
-                  this.executor.call(this, this.state, resolve, reject);
-               }
-            });
-
-            this.action.then(then, then);
-         } else {
-            this.end = true;
-         }
+      if (!!value) {
+         this._begin = value;
+         this.emit('begin', this.values);
       }
    };
 
@@ -80,15 +61,10 @@ export default class Scene extends Notify {
     * @param {Boolean} value
     */
    set end(value) {
-      value = !!value;
-
-      if (value && this.state) {
-         this.state.off('values', this.__stateOnValues);
-         this.__stateOnValues = undefined;
-         this.state = this.state.clone();
+      if (!!value && this.begin) {
+         this._end = value;
+         this.emit('end', this.values);
       }
-
-      this.setProp('end', value);
    };
 
    /**
@@ -96,6 +72,22 @@ export default class Scene extends Notify {
     */
    get end() {
       return !!this._end;
+   };
+
+   /**
+    * @param {Function}
+    */
+   set executor(value) {
+      if (value instanceof Function && !this.begin) {
+         this._executor = value;
+      }
+   };
+
+   /**
+    * @returns {Function}
+    */
+   get executor() {
+      return this._executor;
    };
 
    /**
@@ -115,24 +107,38 @@ export default class Scene extends Notify {
    };
 
    run() {
-      this.begin = true;
+      if (!this.begin && !this.end) {
+         if (this.executor) {
+            const promise = new Promise((...args) => {
+               this.__stateChange = this._stateChange.bind(this, ...args);
+               this._state.on({
+                  change: this.__stateChange
+               });
+
+               this.executor.call(this, this.values, ...args);
+
+               this.begin = true;
+            });
+
+            promise.then(this._then.bind(this), this._then.bind(this));
+         } else {
+            this.begin = true;
+            this.end = true;
+         }
+      }
    };
 
-   _resolve = (resolve) => {
-      this.emit('resolve');
-      resolve();
-      return new Error('resolve');
+   _then() {
+      this.state.off('change', this.__stateChange);
+      this.__stateChange = undefined;
+      this.end = true;
    };
 
-   _reject = (reject) => {
-      this.emit('reject');
-      reject();
-      return new Error('reject');
-   };
-
-   _stateOnValues = (...args) => {
-      args = args.reverse();
-      this.emit('values', ...args);
+   /**
+    * @param {Object} values
+    */
+   _stateChange(...args) {
+      this.emit('change', ...args.reverse());
    };
 
 }

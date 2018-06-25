@@ -5,7 +5,7 @@ let state;
 let values1 = { name: 'player' };
 let values2 = { name: 'name player', count: 2 };
 
-describe('Notify', () => {
+describe('State', () => {
    it('format null', () => {
       state = new State();
 
