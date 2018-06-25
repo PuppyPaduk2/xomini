@@ -1,1 +1,2 @@
-import notify from './Notify';
+// import notify from './Notify';
+import state from './State';

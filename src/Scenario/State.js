@@ -1,34 +1,32 @@
 import Notify from './Notify';
 
-export default class State extends Notify {
+export default class State extends Notify { 
 
    /**
     * @param {Object}
     */
    set values(values) {
+      const prev = {};
       const change = {};
 
       if (values instanceof Object) {
          const keys = Object.keys(values);
 
-         this.format.forEach(name => {
-            if (this._values[name] !== values[name]
-               && keys.indexOf(name) !== -1) {
-               this._prev[name] = this._values[name];
-               this._values[name] = values[name];
-               change[name] = {
-                  prev: this._prev[name],
-                  value: this._values[name]
-               };
+         keys.forEach((key) => {
+            if (this._values[key] !== values[key]
+            && this.format.indexOf(key) !== -1) {
+               prev[key] = this._values[key];
+               change[key] = values[key];
+               this._values[key] = values[key];
             }
          });
       }
 
       if (Object.keys(change).length) {
          this.change = change;
+         this.prev = prev;
 
-         this.emit('prev', this._prev);
-         this.emit('values', this.values);
+         this.emit('change', this.values);
       }
    };
 
@@ -43,8 +41,9 @@ export default class State extends Notify {
     * @param {Object} value
     */
    set change(values) {
-      this._change = values;
-      this.emit('change', this.change);
+      if (values instanceof Object) {
+         this._change = values;
+      }
    };
 
    /**
@@ -55,21 +54,41 @@ export default class State extends Notify {
    };
 
    /**
+    * @param {Object}
+    */
+   set prev(value) {
+      if (value instanceof Object) {
+         this._prev = value;
+      }
+   };
+
+   /**
+    * @returns {Object}
+    */
+   get prev() {
+      return this._prev;
+   };
+
+   /**
     * @param {Object} values
-    * @param {Object} handlers
-    * @param {Object} handlersOnce
+    * @param {Object} [handlers]
+    * @param {Object} [handlersOnce]
     */
    constructor(values, handlers, handlersOnce) {
       super(handlers, handlersOnce);
+
+      values = values instanceof Object ? values : {};
 
       this._prev = {};
       this._change = {};
       this._values = {};
 
-      values = values instanceof Object ? values : {};
+      const format = Object.keys(values);
 
-      this.format = Object.keys(values);
-      this.values = values;
+      this.format = format;
+      format.forEach((key) => {
+         this._values[key] = values[key];
+      });
    };
 
    /**
