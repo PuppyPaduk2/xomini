@@ -103,8 +103,9 @@ describe('Scene', () => {
          // next: sceneZero
       });
 
-      scene.on('change', (...args) => {
-         log(args);
+      scene.on('change', function(values, res) {
+         log(values);
+         res();
       });
 
       scene.run();
@@ -112,7 +113,7 @@ describe('Scene', () => {
       scene.values = { name: 'pl' };
       scene.values = { name: 'name' };
 
-      // scene.stop();
+      scene.stop();
 
       scene.values = { name: 123 };
 
