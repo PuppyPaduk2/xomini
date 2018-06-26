@@ -58,11 +58,11 @@ describe('Scene', () => {
          begin: function() {
             this.values = { name: 'begin' };
          },
-         change: function(values, res) {
+         change: (values, res, scene) => {
             log('change', values);
 
             if (values.name === 'begin @3') {
-               this.values = { name: 'begin @END' };
+               scene.values = { name: 'begin @END' };
                res();
             }
          },
