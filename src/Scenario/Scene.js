@@ -44,7 +44,7 @@ export default class Scene extends Notify {
     * @param {Boolean} value
     */
    set begin(value) {
-      if (!!value) {
+      if (!!value && !this.begin) {
          this._begin = value;
          this.emit('begin', this.values);
       }
@@ -61,7 +61,7 @@ export default class Scene extends Notify {
     * @param {Boolean} value
     */
    set end(value) {
-      if (!!value && this.begin) {
+      if (!!value && this.begin && !this.end) {
          this._end = value;
          this.emit('end', this.values);
       }
@@ -109,13 +109,17 @@ export default class Scene extends Notify {
    run() {
       if (!this.begin && !this.end) {
          if (this.executor) {
-            const promise = new Promise((...args) => {
-               this.__stateChange = this._stateChange.bind(this, ...args);
+            const promise = new Promise((res, rej) => {
+               res = this._resRej.bind(this, res);
+               rej = this._resRej.bind(this, rej);
+
+               this.__stateChange = this._stateChange.bind(this, res, rej);
+
                this._state.on({
                   change: this.__stateChange
                });
 
-               this.executor.call(this, this.values, ...args);
+               this.executor.call(this, this.values, res, rej);
 
                this.begin = true;
             });
@@ -131,7 +135,11 @@ export default class Scene extends Notify {
    _then() {
       this.state.off('change', this.__stateChange);
       this.__stateChange = undefined;
+   };
+
+   _resRej(callback) {
       this.end = true;
+      callback();
    };
 
    /**

@@ -1,6 +1,6 @@
 import Scene from '../Scene';
 import State from '../State';
-import log from '../log';
+import log, { err } from '../common';
 
 let scene;
 let values1 = { name: 'player' };
@@ -13,7 +13,7 @@ describe('Scene', () => {
       scene.values = values2;
 
       if (scene.values.name !== 'player') {
-         throw new Error();
+         err();
       }
    });
 
@@ -26,7 +26,7 @@ describe('Scene', () => {
       scene.end = false;
 
       if (scene.begin === false || scene.end === false) {
-         throw new Error();
+         err();
       }
    });
 
@@ -38,7 +38,7 @@ describe('Scene', () => {
       scene.values = values2;
 
       if (scene.values.name !== 'player') {
-         throw new Error();
+         err();
       }
    });
 
@@ -54,23 +54,32 @@ describe('Scene', () => {
          change: function(values, res) {
             log('change', values);
 
-            if (values.name !== 'begin @1') {
-               this.values = { name: 'begin @1' };
+            if (values.name === 'begin @3') {
+               this.values = { name: 'begin @END' };
                res();
             }
          },
          end: function() {
-            log('end#1', this.values);
             this.values = { name: 'end' };
-            log('end#2', this.values);
+            log('end >>>', this.values);
          }
       });
 
       scene.run();
+
+      scene.values = { name: 'begin @2' };
+      scene.values = { name: 'begin @3' };
+
       scene.run();
 
+      scene.values = { name: 'begin @2' };
+
       if (!(scene.executor instanceof Function)) {
-         throw new Error();
+         err();
+      }
+
+      if (scene.values.name !== 'begin @END') {
+         err();
       }
    });
 });

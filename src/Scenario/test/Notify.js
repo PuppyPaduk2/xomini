@@ -1,5 +1,5 @@
 import Notify from '../Notify';
-import log from '../log';
+import log from '../common';
 import colors from 'colors';
 
 let notify;
