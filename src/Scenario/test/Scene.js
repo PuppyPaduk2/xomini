@@ -93,18 +93,21 @@ describe('Scene', () => {
    it('next scene', () => {
       const sceneZero = new Scene({
          state: new State(values2),
-         executor: function(values) {
-            log('executor', values);
+         handlers: {
+            change: (values, res) => {
+               log('sceneZero:change', values);
+               res();
+            }
          }
       });
 
       scene = new Scene({
          state: new State(values1),
-         // next: sceneZero
+         next: sceneZero
       });
 
-      scene.on('change', function(values, res) {
-         log(values);
+      scene.on('change', (values, res) => {
+         log('scene:change', values);
          res();
       });
 
@@ -112,10 +115,15 @@ describe('Scene', () => {
 
       scene.values = { name: 'pl' };
       scene.values = { name: 'name' };
-
-      scene.stop();
-
       scene.values = { name: 123 };
+
+      log('sceneZero', sceneZero.values);
+
+      sceneZero.values = { name: 'pl' };
+      sceneZero.values = { name: 'name' };
+      sceneZero.values = { name: 123 };
+
+      log('sceneZero', sceneZero.values);
 
    });
 });

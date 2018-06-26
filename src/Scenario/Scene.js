@@ -7,7 +7,7 @@ export default class Scene extends Notify {
     * @param {State} value
     */
    set state(value) {
-      if (!this._state && value instanceof State && !this.begin) {
+      if (value instanceof State && !this.begin) {
          this._state = value;
       }
    };
@@ -128,7 +128,7 @@ export default class Scene extends Notify {
       if (!this.begin && !this.end) {
          if (this.executor && this.state) {
             const promise = new Promise((res, rej) => {
-               this._subscribeToState(this.state, res, rej);
+               this._onState(res, rej);
 
                this.executor.call(this, this.values, res, rej);
 
@@ -137,7 +137,7 @@ export default class Scene extends Notify {
 
             promise.then(this._then.bind(this), this._then.bind(this));
          } else {
-            this._subscribeToState(this.state);
+            this._onState();
             this.begin = true;
          }
       }
@@ -150,13 +150,12 @@ export default class Scene extends Notify {
       return this;
    };
 
-   _then() {
-      this.state.off('change', this.__stateChange);
-      this.__stateChange = undefined;
-   };
+   _then() { };
 
    _resRej(callback) {
       this.end = true;
+
+      this._offState();
 
       if (callback instanceof Function) {
          callback();
@@ -169,20 +168,29 @@ export default class Scene extends Notify {
    };
 
    /**
-    * @param {State} state
     * @param {Function} res
     * @param {Function} rej
     */
-   _subscribeToState(state, res, rej) {
-      if (state instanceof State) {
+   _onState(res, rej) {
+      if (this.state) {
          res = this._resRej.bind(this, res);
          rej = this._resRej.bind(this, rej);
 
          this.__stateChange = this._stateChange.bind(this, res, rej);
 
-         this._state.on({
+         this.state.on({
             change: this.__stateChange
          });
+      }
+   };
+
+   /**
+    * @param {State} state
+    */
+   _offState() {
+      if (this.state) {
+         this.state.off('change', this.__stateChange);
+         this.__stateChange = undefined;
       }
    };
 
