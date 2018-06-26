@@ -8,7 +8,9 @@ let values2 = { name: 'User name', count: 1 };
 
 describe('Scene', () => {
    it('simple example', () => {
-      scene = new Scene(new State(values1));
+      scene = new Scene({
+         state: new State(values1)
+      });
 
       scene.values = values2;
 
@@ -18,7 +20,7 @@ describe('Scene', () => {
    });
 
    it('#run()', () => {
-      scene = new Scene(new State(values1));
+      scene = new Scene();
 
       scene.begin = true;
       scene.begin = false;
@@ -31,9 +33,11 @@ describe('Scene', () => {
    });
 
    it('change values after #run()', () => {
-      scene = new Scene(new State(values1));
+      scene = new Scene({
+         state: new State(values1)
+      });
 
-      scene.run();
+      scene.run().stop();
 
       scene.values = values2;
 
@@ -43,8 +47,11 @@ describe('Scene', () => {
    });
 
    it('set executor and subscribe on events', () => {
-      scene = new Scene(new State(values1), (values, res) => {
-         log('executor', values);
+      scene = new Scene({
+         state: new State(values1),
+         executor: (values, res) => {
+            log('executor', values);
+         }
       });
 
       scene.on({
@@ -81,5 +88,33 @@ describe('Scene', () => {
       if (scene.values.name !== 'begin @END') {
          err();
       }
+   });
+
+   it('next scene', () => {
+      const sceneZero = new Scene({
+         state: new State(values2),
+         executor: function(values) {
+            log('executor', values);
+         }
+      });
+
+      scene = new Scene({
+         state: new State(values1),
+         // next: sceneZero
+      });
+
+      scene.on('change', (...args) => {
+         log(args);
+      });
+
+      scene.run();
+
+      scene.values = { name: 'pl' };
+      scene.values = { name: 'name' };
+
+      // scene.stop();
+
+      scene.values = { name: 123 };
+
    });
 });

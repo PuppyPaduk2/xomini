@@ -7,7 +7,7 @@ export default class Scene extends Notify {
     * @param {State} value
     */
    set state(value) {
-      if (!this._state && value instanceof State) {
+      if (!this._state && value instanceof State && !this.begin) {
          this._state = value;
       }
    };
@@ -91,33 +91,44 @@ export default class Scene extends Notify {
    };
 
    /**
-    * @param {State} state
-    * @param {Function} executor
+    * @param {Scene} value
+    */
+   set next(value) {
+      if (!this.begin && value instanceof Scene) {
+         this._next = value;
+      }
+   };
+
+   /**
+    * @returns {Scene}
+    */
+   get next() {
+      return this._next || null;
+   };
+
+   /**
     * @param {Object} [options]
+    * @param {Function} [options.executor]
+    * @param {State} [options.state]
+    * @param {Scene} [options.next]
     * @param {Object} [options.handlers]
     * @param {Object} [options.handlersOnce]
     */
-   constructor(state, executor, options) {
+   constructor(options) {
       options = options instanceof Object ? options : {};
 
       super(options.handlers, options.handlersOnce);
 
-      this.state = state;
-      this.executor = executor;
+      this.state = options.state;
+      this.executor = options.executor;
+      this.next = options.next;
    };
 
    run() {
       if (!this.begin && !this.end) {
-         if (this.executor) {
+         if (this.executor && this.state) {
             const promise = new Promise((res, rej) => {
-               res = this._resRej.bind(this, res);
-               rej = this._resRej.bind(this, rej);
-
-               this.__stateChange = this._stateChange.bind(this, res, rej);
-
-               this._state.on({
-                  change: this.__stateChange
-               });
+               this._subscribeToState(this.state, res, rej);
 
                this.executor.call(this, this.values, res, rej);
 
@@ -126,10 +137,17 @@ export default class Scene extends Notify {
 
             promise.then(this._then.bind(this), this._then.bind(this));
          } else {
+            this._subscribeToState(this.state);
             this.begin = true;
-            this.end = true;
          }
       }
+
+      return this;
+   };
+
+   stop() {
+      this.end = true;
+      return this;
    };
 
    _then() {
@@ -139,7 +157,33 @@ export default class Scene extends Notify {
 
    _resRej(callback) {
       this.end = true;
-      callback();
+
+      if (callback instanceof Function) {
+         callback();
+      }
+
+      if (this.next) {
+         this.next.state = this.state;
+         this.next.run();
+      }
+   };
+
+   /**
+    * @param {State} state
+    * @param {Function} res
+    * @param {Function} rej
+    */
+   _subscribeToState(state, res, rej) {
+      if (state instanceof State) {
+         res = this._resRej.bind(this, res);
+         rej = this._resRej.bind(this, rej);
+
+         this.__stateChange = this._stateChange.bind(this, res, rej);
+
+         this._state.on({
+            change: this.__stateChange
+         });
+      }
    };
 
    /**
