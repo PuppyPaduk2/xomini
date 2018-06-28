@@ -1,7 +1,7 @@
-import Notify from './Notify';
+import BeginEnd from './BeginEnd';
 import State from './State';
 
-export default class Scene extends Notify {
+export default class Scene extends BeginEnd {
 
    /**
     * @param {State} value
@@ -38,40 +38,6 @@ export default class Scene extends Notify {
       } else {
          return {};
       }
-   };
-
-   /**
-    * @param {Boolean} value
-    */
-   set begin(value) {
-      if (!!value && !this.begin) {
-         this._begin = value;
-         this.emit('begin', this.values);
-      }
-   };
-
-   /**
-    * @returns {Boolean}
-    */
-   get begin() {
-      return !!this._begin;
-   };
-
-   /**
-    * @param {Boolean} value
-    */
-   set end(value) {
-      if (!!value && this.begin && !this.end) {
-         this._end = value;
-         this.emit('end', this.values);
-      }
-   };
-
-   /**
-    * @returns {Boolean}
-    */
-   get end() {
-      return !!this._end;
    };
 
    /**
@@ -119,6 +85,7 @@ export default class Scene extends Notify {
 
       super(options.handlers, options.handlersOnce);
 
+      this.name = options.name;
       this.state = options.state;
       this.executor = options.executor;
       this.next = options.next;
@@ -128,11 +95,10 @@ export default class Scene extends Notify {
       if (!this.begin && !this.end) {
          if (this.executor && this.state) {
             const promise = new Promise((res) => {
+               res = this._resRej.bind(this, res);
                this._onState(res);
-
-               this.executor.call(this, this.values, res);
-
                this.begin = true;
+               this.executor.call(this, this.values, res, this);
             });
 
             promise.then(this._then.bind(this));
@@ -150,10 +116,12 @@ export default class Scene extends Notify {
       return this;
    };
 
-   _then() { };
+   _then() {
+      this.emit('then', this.values, this);
+   };
 
    _resRej(callback) {
-      this.end = true;
+      this.stop();
 
       this._offState();
 

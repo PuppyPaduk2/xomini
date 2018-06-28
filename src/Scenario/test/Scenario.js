@@ -9,56 +9,71 @@ let values1 = {
    point: [50, 99],
    count: 0
 };
-let scene;
+var values2 = {
+   name: 'new name user',
+   point: [0, 0],
+   count: 1
+};
 
 describe('Scenario', () => {
    it('simple', () => {
-      scenario = new Scenario([
-         {
-            handlers: {
-               begin: () => {
-                  log('scene:1:begin');
-               },
-               end: () => {
-                  log('scene:1:end');
-               },
-               change: (values, res, scene) => {
-                  log(values);
+      scenario = new Scenario({
+         state: new State(values1),
+         scenes: [
+            {
+               name: 'scene#1',
+               handlers: {
+                  change: (values, res, scene) => {
+                     log(scene.name, values);
+                     res();
+                  }
+               }
+            }, {
+               name: 'scene#2',
+               handlers: {
+                  change: (values, res, scene) => {
+                     log(scene.name, values);
 
-                  if (values.point[0] < 5 && values.point[1] < 5) {
-                     scene.values = {
-                        point: [values.point[0] + 1, values.point[1] + 1]
-                     };
+                     if (values.name === '321') {
+                        res();
+                     }
+                  }
+               }
+            }, {
+               name: 'scene#3',
+               executor: (values, res, scene) => {
+                  log(scene.name, 'executor');
+                  res();
+                  scene.values = { name: 'after res()' };
+               },
+               handlers: {
+                  change: (values, res, scene) => {
+                     log(scene.name, values);
+                     res();
+                  },
+                  then: (values, scene) => {
+                     log('then', values, scene.end);
+                  }
+               }
+            }, {
+               name: 'scene#4',
+               handlers: {
+                  change: (values, res, scene) => {
+                     log(scene.name, values);
                      res();
                   }
                }
             }
-         }, {
-            handlers: {
-               begin: () => {
-                  log('scene:2:begin');
-               },
-               end: () => {
-                  log('scene:2:end');
-               },
-               change: (values, res, scene) => {
-                  log(values);
+         ]
+      });
 
-                  if (values.point[0] < 5 && values.point[1] < 5) {
-                     scene.values = {
-                        point: [values.point[0] + 1, values.point[1] + 1]
-                     };
-                     res();
-                  }
-               }
-            }
-         }
-      ], {
-            state: new State(values1)
-         });
+      scenario.run();
 
-      scenario.scenes[0].run();
-      scenario.scenes[0].values = { name: 'new name' };
-      scenario.scenes[0].values = { point: [0, 0] };
+      scenario.scene.values = values2;
+      scenario.scene.values = { name: '123' };
+      scenario.scene.values = { name: 'asd' };
+      scenario.scene.values = { name: '321' };
+      scenario.scene.values = { name: 'Player#1' };
+
    });
 });

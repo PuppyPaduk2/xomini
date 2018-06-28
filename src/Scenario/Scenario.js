@@ -1,8 +1,8 @@
-import Notify from './Notify';
+import BeginEnd from './BeginEnd';
 import State from './State';
 import Scene from './Scene';
 
-export default class Scenario extends Notify {
+export default class Scenario extends BeginEnd {
 
    /**
     * @param {Object[]} scenes
@@ -13,13 +13,25 @@ export default class Scenario extends Notify {
             if (scene instanceof Object) {
                scene = new Scene(scene);
 
-               if (this.state) {
+               scene.once({
+                  begin: this._sceneBegin.bind(this)
+               });
+
+               if (this.state && !index) {
                   scene.state = this.state;
                }
 
                return scene;
             }
-         }).filter(scene => scene !== undefined);
+         }).filter(scene => scene !== undefined)
+
+         this._scenes.forEach((scene, index) => {
+            const sceneNext = this._scenes[index + 1];
+
+            if (sceneNext) {
+               scene.next = sceneNext;
+            }
+         });
       }
    };
 
@@ -63,19 +75,28 @@ export default class Scenario extends Notify {
    };
 
    /**
-    * @param {Object[]} scenes
     * @param {Object} [options]
+    * @param {Object[]} [options.scenes]
     * @param {State} [options.state]
     * @param {Object} [options.handlers]
     * @param {Object} [options.handlersOnce]
     */
-   constructor(scenes, options) {
+   constructor(options) {
       options = options instanceof Object ? options : {};
 
       super(options.handlers, options.handlersOnce);
 
       this.state = options.state;
-      this.scenes = scenes;
+      this.scenes = options.scenes;
+   };
+
+   run() {
+      this.begin = true;
+      this.scenes[0].run();
+   };
+
+   _sceneBegin(scene) {
+      this.scene = scene;
    };
 
 }
