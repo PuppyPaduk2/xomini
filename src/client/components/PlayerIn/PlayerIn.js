@@ -27,11 +27,13 @@ export default class PlayerIn extends Component {
       const props = this.props;
       const state = this.state;
 
-      if (this.isValid() && props.onSend instanceof Function) {
-         props.onSend({
-            room: state.room,
-            name: state.name
-         });
+      if (this.isValid()) {
+         if (props.onSend instanceof Function) {
+            props.onSend({
+               room: state.room,
+               name: state.name
+            });
+         }
       } else {
          this.toggleMessageError(true);
       }

@@ -1,32 +1,22 @@
 import path from 'path';
 import express from 'express';
-import React from 'react';
-import ReactDom from 'react-dom/server';
-import setupHttp from './setupHttp';
-
-import Html from '../client/components/Html/Html';
-import App from '../client/components/App/App';
+import http from 'http';
+import io from 'socket.io';
+import main from './get/main';
+import socketConnection from './socket';
 
 const PORT = 3000;
-
 const app = express();
-const { server, io } = setupHttp(app);
+const server = http.Server(app);
+const serverIo = new io(server, {
+   serveClient: false,
+   wsEngine: 'ws'
+});
 
 app.use(express.static(path.join('client')));
+app.get('/', main);
 
-app.get('/', function(req, res) {
-   const initialData = {
-      players: []
-   };
-   const htmlParams = {
-      content: <App {...initialData} />,
-      initialData: initialData
-   };
-
-   const result = ReactDom.renderToString(<Html {...htmlParams} />);
-
-   return res.send(result);
-});
+serverIo.on('connection', socketConnection.bind(serverIo));
 
 server.listen(PORT, function() {
    console.log(`Example app listening on port ${PORT}!`);

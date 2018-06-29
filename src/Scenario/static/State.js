@@ -1,6 +1,6 @@
 import Notify from './Notify';
 
-export default class State extends Notify { 
+export default class State extends Notify {
 
    /**
     * @param {Object}
@@ -14,7 +14,7 @@ export default class State extends Notify {
 
          keys.forEach((key) => {
             if (this._values[key] !== values[key]
-            && this.format.indexOf(key) !== -1) {
+               && this.format.indexOf(key) !== -1) {
                prev[key] = this._values[key];
                change[key] = values[key];
                this._values[key] = values[key];
@@ -99,6 +99,31 @@ export default class State extends Notify {
     */
    clone() {
       return new State(this.values);
+   };
+
+   /**
+    * @param {String} name
+    */
+   getValue(name) {
+      if (this.format.indexOf(name) !== -1) {
+         return this.values[name] || null;
+      }
+   };
+
+   /**
+    * @param {?|String} name
+    * @param {?} value
+    */
+   setValue(name, value) {
+      var values = {};
+
+      if (typeof name === 'string') {
+         values[name] = value;
+      } else if (name instanceof Object) {
+         values = name;
+      }
+
+      this.values = values;
    };
 
 }
