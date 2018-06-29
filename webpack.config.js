@@ -24,7 +24,7 @@ module.exports = [
    defaultConfig({
       dir: 'Scenario',
       entry: {
-         test: 'test'
+         'static/test': 'static/test'
       }
    })
 ];
