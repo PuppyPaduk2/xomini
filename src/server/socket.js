@@ -3,21 +3,18 @@ import State from '../Scenario/io/State';
 let state;
 
 export default function(socket) {
-   if (!state) {
-      state = new State(this, {
-         count: 0
-      });
-   }
+   socket.on('signIn', (params) => {
+      const room = params.room;
 
-   state.setValue({
-      count: state.getValue('count') + 1
-   });
+      if (!socket.rooms[room]) {
+         socket.join(room, () => {
+            console.log('#TODO ...code');
+            // socket.to(room).emit('join')
 
-   console.log('#connection', socket.id, state.values);
-
-   socket.on('disconnecting', () => {
-      state.setValue('count', state.getValue('count') - 1);
-
-      console.log('#disconnecting', socket.id, state.values);
+            console.log('singIn', params, socket.rooms);
+         });
+      } else {
+         console.log(socket.to(room) === socket);
+      }
    });
 };

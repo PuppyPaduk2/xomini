@@ -16,14 +16,16 @@ export default class App extends Component {
 
    componentDidMount() {
       const socket = createSocket();
+
+      this.socket = socket;
    };
 
    onClickBegin = () => {
       console.log('onClickBegin');
    };
 
-   playerInOnSend = (...args) => {
-      console.log('playerInOnSend', ...args);
+   playerInOnSend = (params) => {
+      this.socket.emit('signIn', params);
    };
 
    render() {
