@@ -4,6 +4,7 @@ import log from '../common';
 let state;
 let values1 = { name: 'player' };
 let values2 = { name: 'name player', count: 2 };
+let values3 = { name: 'user name', count: 3 };
 
 describe('State', () => {
    it('format null', () => {
@@ -35,7 +36,7 @@ describe('State', () => {
       }
    });
 
-   it('subcibe on event "change"', () => {
+   it('subcribe on event "change"', () => {
       let count = 0;
 
       state = new State(values1, {

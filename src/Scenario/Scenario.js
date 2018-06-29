@@ -76,6 +76,7 @@ export default class Scenario extends BeginEnd {
 
    /**
     * @param {Object} [options]
+    * @param {String} [options.name]
     * @param {Object[]} [options.scenes]
     * @param {State} [options.state]
     * @param {Object} [options.handlers]
@@ -86,6 +87,7 @@ export default class Scenario extends BeginEnd {
 
       super(options.handlers, options.handlersOnce);
 
+      this.name = options.name;
       this.state = options.state;
       this.scenes = options.scenes;
    };

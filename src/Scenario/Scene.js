@@ -74,8 +74,9 @@ export default class Scene extends BeginEnd {
 
    /**
     * @param {Object} [options]
-    * @param {Function} [options.executor]
+    * @param {String} [options.name]
     * @param {State} [options.state]
+    * @param {Function} [options.executor]
     * @param {Scene} [options.next]
     * @param {Object} [options.handlers]
     * @param {Object} [options.handlersOnce]

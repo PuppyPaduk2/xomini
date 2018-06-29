@@ -60,7 +60,10 @@ describe('Scenario', () => {
                handlers: {
                   change: (values, res, scene) => {
                      log(scene.name, values);
-                     res();
+
+                     if (values.name === 'Player#2') {
+                        res();
+                     }
                   }
                }
             }
@@ -74,6 +77,7 @@ describe('Scenario', () => {
       scenario.scene.values = { name: 'asd' };
       scenario.scene.values = { name: '321' };
       scenario.scene.values = { name: 'Player#1' };
+      scenario.scene.values = { name: 'Player#2' };
 
    });
 });

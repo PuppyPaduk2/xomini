@@ -9,7 +9,8 @@ export default function(...args) {
       args[0] = JSON.stringify(args[0]);
    }
 
-   args[0] = ('\u2022 ' + args[0]).gray;
+   args[0] = ['        ', ('\u2022 ' + args[0]).gray].join('');
+
    log(...args);
 }
 
