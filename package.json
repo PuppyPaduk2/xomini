@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "buildwatch": "webpack --watch",
+    "build:watch": "webpack --watch",
     "mocha": "./node_modules/.bin/mocha",
     "mocha:watch": "mocha -w",
     "test:watch": "mocha -w ./dist/Scenario/static/test.js"

@@ -1,6 +1,8 @@
 import common from './common';
 import { game } from '../../client/game';
 
+import State from '../../Scenario/io/State';
+
 const path = '/players';
 
 function signIn(io, socket, params) {
@@ -41,7 +43,19 @@ function signIn(io, socket, params) {
    }
 }
 
+let state;
+
 export default function(io) {
+   state = new State(io, {
+      count: 0
+   });
+
+   io.on('connection', (socket) => {
+      console.log('#log', socket.id);
+
+      state.values = { count: state.values.count + 1 };
+   });
+
    const players = common.namespace(io, path, {
 
       connection: params => {

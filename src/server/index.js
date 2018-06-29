@@ -10,7 +10,7 @@ import App from '../client/components/App/App';
 const PORT = 3000;
 
 const app = express();
-const { server } = setupHttp(app);
+const { server, io } = setupHttp(app);
 
 app.use(express.static(path.join('client')));
 

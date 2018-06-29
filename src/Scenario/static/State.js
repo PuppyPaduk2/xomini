@@ -26,7 +26,7 @@ export default class State extends Notify {
          this.change = change;
          this.prev = prev;
 
-         this.emit('change', this.values);
+         this.emit('change', this.values, this);
       }
    };
 
@@ -71,11 +71,14 @@ export default class State extends Notify {
 
    /**
     * @param {Object} values
-    * @param {Object} [handlers]
-    * @param {Object} [handlersOnce]
+    * @param {Object} [options]
+    * @param {Object} [options.handlers]
+    * @param {Object} [options.handlersOnce]
     */
-   constructor(values, handlers, handlersOnce) {
-      super(handlers, handlersOnce);
+   constructor(values, options) {
+      options = options instanceof Object ? options : {};
+
+      super(options.handlers, options.handlersOnce);
 
       values = values instanceof Object ? values : {};
 

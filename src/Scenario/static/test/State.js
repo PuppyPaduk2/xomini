@@ -40,10 +40,13 @@ describe('State', () => {
       let count = 0;
 
       state = new State(values1, {
-         change: () => { count++; }
-      }, {
+         handlers: {
             change: () => { count++; }
-         });
+         },
+         handlersOnce: {
+            change: () => { count++; }
+         }
+      });
 
       state.on('change', () => { count++; });
 

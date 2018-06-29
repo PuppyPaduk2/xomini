@@ -15,10 +15,23 @@ export default class App extends Component {
    state = _.merge({
       palette: colors,
       isSignIn: false,
+      count: 0
    }, game.defaultState());
 
    componentDidMount() {
+      const all = createSocket();
+
       this.sockets = { players: createSocket(path) };
+
+      all.on('state:create', (values) => {
+         this.setState(values);
+         console.log('state:create', values);
+      });
+
+      all.on('state:change', (values) => {
+         this.setState(values);
+         console.log('state:change', values);
+      });
    };
 
    initConnection = params => {
@@ -93,7 +106,7 @@ export default class App extends Component {
 
       return (
          <div className="app">
-            <div className="top">{top}</div>
+            <div className="top">{top}{state.count}</div>
             <div className="center">{center}</div>
             <div className="bottom">{bottom}</div>
          </div>
