@@ -18,6 +18,10 @@ export default class App extends Component {
       const socket = createSocket();
 
       this.socket = socket;
+
+      this.socket.on('state:change', (...args) => {
+         console.log(args);
+      })
    };
 
    onClickBegin = () => {

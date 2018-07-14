@@ -210,24 +210,21 @@ describe('Notify', () => {
       });
    });
 
-   it('#setProp()', () => {
-      defCount();
+   it('#destoy subscriber', () => {
+      notify = new Notify();
 
-      notify = new Notify({
-         begin: () => { count.event1++ }
-      });
+      let test = {
+         func: function() {
+            console.log('test');
+         }
+      };
 
-      notify.setProp('begin', 100);
+      notify.on('test', test.func);
 
-      if (count.event1 !== 1 || notify._begin !== 100) {
-         throw new Error();
-      }
-   });
+      notify.emit('test');
 
+      test = null;
 
-   it('#getProp()', () => {
-      if (notify.getProp('begin') !== 100) {
-         throw new Error();
-      }
+      notify.emit('test');
    });
 });

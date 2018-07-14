@@ -1,20 +1,25 @@
-import State from '../Scenario/io/State';
+import State from '../Scenario/io/server/State';
+import StaticState from '../Scenario/static/State';
 
+let staticState = new StaticState({
+   count: 0
+});
 let state;
 
 export default function(socket) {
+
    socket.on('signIn', (params) => {
-      const room = params.room;
+      console.log(params);
 
-      if (!socket.rooms[room]) {
-         socket.join(room, () => {
-            console.log('#TODO ...code');
-            // socket.to(room).emit('join')
+      socket.join('q');
 
-            console.log('singIn', params, socket.rooms);
-         });
-      } else {
-         console.log(socket.to(room) === socket);
+      if (!state) {
+         state = new State(this.to('q'));
       }
+
+      this.to('q')
+         .emit('state:change', '123', socket.id);
+
    });
+
 };

@@ -160,30 +160,4 @@ export default class Notify {
       return result;
    };
 
-   /**
-    * @param {String} nameProp
-    * @param {?} value
-    * @param {Fuction} [callback]
-    */
-   setProp(nameProp, value, callback) {
-      const pNameProp = '_' + nameProp;
-
-      if (this[pNameProp] !== value) {
-         this[pNameProp] = value;
-
-         this.emit(nameProp, value);
-
-         if (callback instanceof Function) {
-            callback.apply(this, arguments);
-         }
-      }
-   };
-
-   /**
-    * @param {String} nameProp
-    */
-   getProp(nameProp) {
-      return this['_' + nameProp];
-   };
-
 }
