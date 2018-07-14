@@ -1,5 +1,4 @@
 import State from '../State';
-import log from '../common';
 
 let state;
 let values1 = { name: 'player' };

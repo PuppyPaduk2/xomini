@@ -1,8 +1,8 @@
-import BeginEnd from './BeginEnd';
+import Element from './Element';
 import State from './State';
 import Scene from './Scene';
 
-export default class Scenario extends BeginEnd {
+export default class Scenario extends Element {
 
    /**
     * @param {Object[]} scenes
@@ -14,7 +14,9 @@ export default class Scenario extends BeginEnd {
                scene = new Scene(scene);
 
                scene.once({
-                  begin: this._sceneBegin.bind(this)
+                  begin: this._sceneBegin.bind(this),
+                  end: this._sceneEnd.bind(this),
+                  next: this._sceneNext.bind(this)
                });
 
                if (this.state && !index) {
@@ -82,9 +84,7 @@ export default class Scenario extends BeginEnd {
     * @param {Object} [options.handlers]
     * @param {Object} [options.handlersOnce]
     */
-   constructor(options) {
-      options = options instanceof Object ? options : {};
-
+   constructor(options = {}) {
       super(options.handlers, options.handlersOnce);
 
       this.name = options.name;
@@ -94,11 +94,46 @@ export default class Scenario extends BeginEnd {
 
    run() {
       this.begin = true;
+      if (this.state) {
+         this.__stateChange = this._stateChange.bind(this);
+         this.state.on('change', this.__stateChange);
+      }
       this.scenes[0].run();
+      return this;
    };
 
-   _sceneBegin(scene) {
+   stop() {
+      if (this.state) {
+         this.state.off('change', this.__stateChange);
+         this.__stateChange = undefined;
+      }
+      this.end = true;
+      return this;
+   };
+
+   /**
+    * @param {Scene} scene
+    * @param {*} args
+    */
+   _sceneBegin(scene, ...args) {
       this.scene = scene;
+      this.emit('scene:begin', scene, ...args, this);
+   };
+
+   _sceneEnd(scene, next) {
+      if (!next) {
+         this.stop();
+      }
+
+      this.emit('scene:end', scene, next, this);
+   };
+
+   _sceneNext(...args) {
+      this.emit('scene:next', ...args, this);
+   };
+
+   _stateChange(...args) {
+      this.emit('state:change', ...args);
    };
 
 }

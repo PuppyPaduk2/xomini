@@ -1,7 +1,7 @@
-import BeginEnd from './BeginEnd';
+import Element from './Element';
 import State from './State';
 
-export default class Scene extends BeginEnd {
+export default class Scene extends Element {
 
    /**
     * @param {State} value
@@ -81,9 +81,7 @@ export default class Scene extends BeginEnd {
     * @param {Object} [options.handlers]
     * @param {Object} [options.handlersOnce]
     */
-   constructor(options) {
-      options = options instanceof Object ? options : {};
-
+   constructor(options = {}) {
       super(options.handlers, options.handlersOnce);
 
       this.name = options.name;
@@ -113,7 +111,11 @@ export default class Scene extends BeginEnd {
    };
 
    stop() {
-      this.end = true;
+      if (this.pending) {
+         this.end = true;
+         this._offState();
+      }
+
       return this;
    };
 
@@ -122,17 +124,18 @@ export default class Scene extends BeginEnd {
    };
 
    _resRej(callback) {
-      this.stop();
+      if (this.pending) {
+         this.stop();
 
-      this._offState();
+         if (callback instanceof Function) {
+            callback();
+         }
 
-      if (callback instanceof Function) {
-         callback();
-      }
-
-      if (this.next) {
-         this.next.state = this.state;
-         this.next.run();
+         if (this.next) {
+            this.next.state = this.state;
+            this.emit('next', this.next, this.state, this);
+            this.next.run();
+         }
       }
    };
 
@@ -166,6 +169,19 @@ export default class Scene extends BeginEnd {
     */
    _stateChange(res, values) {
       this.emit('change', values, res, this);
+   };
+
+   /**
+    * @returns {Array}
+    */
+   _argsEmitEnd() {
+      const result = [];
+
+      if (this.next) {
+         result.push(this.next);
+      }
+
+      return result;
    };
 
 }

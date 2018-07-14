@@ -38,6 +38,11 @@ describe('Scenario', () => {
                         res();
                      }
                   }
+               },
+               handlersOnce: {
+                  next: (next, state, scene) => {
+                     log(scene.name, 'next');
+                  }
                }
             }, {
                name: 'scene#3',
@@ -67,17 +72,30 @@ describe('Scenario', () => {
                   }
                }
             }
-         ]
+         ],
+         handlersOnce: {
+            end: () => {
+               log('scenario end');
+            }
+         },
+         handlers: {
+            'state:change': (values, state) => {
+               log('state:change', state.prev);
+            }
+         }
       });
 
       scenario.run();
 
-      scenario.scene.values = values2;
-      scenario.scene.values = { name: '123' };
-      scenario.scene.values = { name: 'asd' };
-      scenario.scene.values = { name: '321' };
-      scenario.scene.values = { name: 'Player#1' };
-      scenario.scene.values = { name: 'Player#2' };
+      scenario.state.values = values2;
+      scenario.state.values = { name: '123' };
+      scenario.state.values = { name: 'asd' };
+      scenario.state.values = { name: '321' };
+      scenario.state.values = { name: 'Player#1', point: [1, 1] };
+      scenario.state.values = { name: 'Player#2', count: 2 };
+
+      scenario.state.values = { name: 'Player#3' };
+      scenario.state.values = { name: 'Player#4' };
 
    });
 });

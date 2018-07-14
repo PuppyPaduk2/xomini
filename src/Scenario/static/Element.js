@@ -1,6 +1,6 @@
 import Notify from './Notify';
 
-export default class BeginEnd extends Notify {
+export default class Element extends Notify {
 
    /**
     * @param {Boolean} value
@@ -8,7 +8,7 @@ export default class BeginEnd extends Notify {
    set begin(value) {
       if (!!value && !this.begin) {
          this._begin = value;
-         this.emit('begin', this);
+         this.emit('begin', this, ...this._argsEmitBegin());
       }
    };
 
@@ -23,9 +23,9 @@ export default class BeginEnd extends Notify {
     * @param {Boolean} value
     */
    set end(value) {
-      if (!!value && this.begin && !this.end) {
+      if (!!value && this.pending) {
          this._end = value;
-         this.emit('end', this);
+         this.emit('end', this, ...this._argsEmitEnd());
       }
    };
 
@@ -34,6 +34,13 @@ export default class BeginEnd extends Notify {
     */
    get end() {
       return !!this._end;
+   };
+
+   /**
+    * @returns {Boolean}
+    */
+   get pending() {
+      return !!this.begin && !this.end;
    };
 
    /**
@@ -50,6 +57,20 @@ export default class BeginEnd extends Notify {
     */
    get name() {
       return this._name || '';
-   }
+   };
+
+   /**
+    * @returns {Array}
+    */
+   _argsEmitBegin() {
+      return [];
+   };
+
+   /**
+    * @returns {Array}
+    */
+   _argsEmitEnd() {
+      return [];
+   };
 
 }

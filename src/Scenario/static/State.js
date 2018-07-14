@@ -66,7 +66,35 @@ export default class State extends Notify {
     * @returns {Object}
     */
    get prev() {
-      return this._prev;
+      return Object.keys(this._prev).length
+         ? this.format.reduce((result, key) => {
+            const prev = this._prev[key];
+
+            if (prev !== undefined) {
+               result[key] = prev;
+            } else {
+               result[key] = this.values[key];
+            }
+
+            return result;
+         }, {})
+         : this._prev;
+   };
+
+   /**
+    * @param {Object} values
+    */
+   set format(values) {
+      if (values instanceof Object && this.format === null) {
+         this._format = Object.keys(values);
+      }
+   };
+
+   /**
+    * @returns {Array|null}
+    */
+   get format() {
+      return this._format || null;
    };
 
    /**
@@ -75,21 +103,16 @@ export default class State extends Notify {
     * @param {Object} [options.handlers]
     * @param {Object} [options.handlersOnce]
     */
-   constructor(values, options) {
-      options = options instanceof Object ? options : {};
-
+   constructor(values = {}, options = {}) {
       super(options.handlers, options.handlersOnce);
 
-      values = values instanceof Object ? values : {};
-
+      this._values = {};
       this._prev = {};
       this._change = {};
-      this._values = {};
 
-      const format = Object.keys(values);
+      this.format = values;
 
-      this.format = format;
-      format.forEach((key) => {
+      this.format.forEach((key) => {
          this._values[key] = values[key];
       });
    };

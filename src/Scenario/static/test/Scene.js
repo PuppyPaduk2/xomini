@@ -92,6 +92,7 @@ describe('Scene', () => {
 
    it('next scene', () => {
       const sceneZero = new Scene({
+         name: '@sceneZero',
          state: new State(values2),
          handlers: {
             change: (values, res) => {
@@ -102,8 +103,17 @@ describe('Scene', () => {
       });
 
       scene = new Scene({
+         name: '@firstScene',
          state: new State(values1),
-         next: sceneZero
+         next: sceneZero,
+         handlersOnce: {
+            end: (scene, next) => {
+               log('end', scene.name, next.name);
+            },
+            next: () => {
+               log('next');
+            }
+         }
       });
 
       scene.on('change', (values, res) => {
