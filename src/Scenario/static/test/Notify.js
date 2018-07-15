@@ -1,230 +1,169 @@
+import chai from 'chai';
 import Notify from '../Notify';
-import log from '../common';
-import colors from 'colors';
+
+const expect = chai.expect;
+const assert = chai.assert;
+
+const test = (count = 0) => {
+   return count + 1;
+};
+const test2 = (count = 0) => {
+   return count + 10;
+};
+const testErr = () => {
+   return new Error('message error');
+};
 
 let notify;
 
-let count;
+function onOnce(notify, func) {
+   describe(`#${func}()`, () => {
+      it('function', () => {
+         notify.off()[func]('test', test);
 
-function defCount() {
-   count = {
-      event1: 0,
-      event21: 0,
-      event22: 0
-   };
-};
+         assert.equal(notify.countHandlers().test[func], 1);
+      });
 
-function getEvents(key) {
-   return {
-      event1: () => { count.event1++ },
-      event2: [
-         () => { count.event21++ },
-         () => { count.event22++ }
-      ]
-   };
-};
+      it('function[]', () => {
+         notify.off()[func]('test', [test, test]);
 
-function emit() {
-   notify.emit('event1');
-   notify.emit('event2');
-   notify.emit('event1');
-   notify.emit('event2');
-};
+         assert.equal(notify.countHandlers().test[func], 2);
+      });
 
-function subscribeEvent1() {
-   const event1 = () => { count.event1++ };
+      it('object', () => {
+         notify.off()[func]({
+            test: test,
+            test2: test2
+         });
 
-   notify = new Notify({ event1: event1 }, { event1: event1 });
+         const count = notify.countHandlers();
 
-   notify.on('event1', event1);
-   notify.on({
-      event1: event1
+         assert.equal(count.test[func], 1);
+         assert.equal(count.test2[func], 1);
+      });
+
+      it('object with array', () => {
+         notify.off()[func]({
+            test: [test, test],
+            test2: [test2, test2]
+         });
+
+         const count = notify.countHandlers();
+
+         assert.equal(count.test[func], 2);
+         assert.equal(count.test2[func], 2);
+      });
    });
-   notify.once('event1', event1);
-   notify.once({
-      event1: event1
-   });
-
-   return event1;
 };
 
-function onAfterInit() {
-   notify.on('event1', () => { count.event1++ });
-   notify.on(getEvents('on'));
-
-   notify.once('event1', () => { count.event1++ });
-   notify.once(getEvents('once'));
+function defOn(notify) {
+   return notify.off().on({
+      test: test,
+      test2: [test2, test2]
+   });
 };
 
 describe('Notify', () => {
-   it('subscribe' + ' on'.green + ' initialize'.grey, () => {
-      defCount();
-
-      notify = new Notify(getEvents('on'), getEvents('once'));
-
-      emit();
-
-      if (count.event1 !== 3 || count.event21 !== 3 || count.event22 !== 3) {
-         throw new Error();
+   notify = new Notify({
+      on: {
+         test: test,
+         test2: [test2, test2]
+      },
+      once: {
+         test: test,
+         test2: [test2, test2]
       }
    });
 
-   it('subscribe' + ' after'.green + ' initialize'.grey, () => {
-      defCount();
-
-      notify = new Notify();
-
-      onAfterInit();
-
-      emit();
-
-      if (count.event1 !== 6 || count.event21 !== 3 || count.event22 !== 3) {
-         throw new Error();
-      }
+   it('#new + add handlers', () => {
+      expect(notify.countHandlers()).to.deep.include({
+         test: { on: 1, once: 1 },
+         test2: { on: 2, once: 2 }
+      });
    });
+
+   onOnce(notify, 'on');
+   onOnce(notify, 'once');
 
    describe('#off()', () => {
       it('all', () => {
-         defCount();
+         defOn(notify).off();
 
-         notify = new Notify(getEvents('on'), getEvents('once'));
-
-         onAfterInit();
-
-         notify.off();
-
-         emit();
-
-         if (count.event1 !== 0 || count.event21 !== 0 || count.event22 !== 0) {
-            throw new Error();
-         }
+         expect(Object.keys(notify.countHandlers())).to.have.lengthOf(0);
       });
 
-      it('event', () => {
-         defCount();
+      describe('nameEvent (string)', () => {
+         it('callback (undefined)', () => {
+            defOn(notify).off('test');
 
-         subscribeEvent1();
+            const count = notify.countHandlers();
 
-         notify.off('event1');
+            expect(count).to.deep.include({
+               test2: { on: 2, once: 0 }
+            });
+            expect(count).to.have.keys(['test2']);
+         });
 
-         emit();
+         it('callback (Function)', () => {
+            defOn(notify).off('test', test);
 
-         if (count.event1 !== 0) {
-            throw new Error();
-         }
+            expect(notify.countHandlers()).to.have.keys(['test2']);
+         });
+
+         it('callback (Array)', () => {
+            defOn(notify).on('test', test2).off('test', [test, test2]);
+
+            expect(notify.countHandlers()).to.have.keys(['test2']);
+         });
       });
 
-      it('handler', () => {
-         defCount();
+      describe('nameEvent (not string)', () => {
+         it('callback (Function)', () => {
+            defOn(notify).on('test2', test).off(test);
 
-         const event1 = subscribeEvent1();
+            expect(notify.countHandlers()).to.have.keys(['test2']);
+            expect(notify.countHandlers()).to.deep.include({
+               test2: { on: 2, once: 0 }
+            });
+         });
 
-         notify.off('event1', event1);
+         it('callback (Array)', () => {
+            defOn(notify).off([test, 'test2']);
 
-         emit();
+            expect(notify.countHandlers()).to.have.not.keys(['test', 'test2']);
+         });
 
-         if (count.event1 !== 0) {
-            throw new Error();
-         }
-      });
+         it('callback (Object)', () => {
+            defOn(notify).on({
+               test: test2,
+               test2: test2
+            }).off({
+               test: [test, test2],
+               test2: test2
+            });
 
-      it('handler set', () => {
-         defCount();
-
-         const eventSet = [
-            () => { count.event1++ },
-            () => { count.event1++ }
-         ];
-
-         notify = new Notify({ event1: eventSet }, { event1: eventSet });
-
-         notify.on('event1', eventSet);
-         notify.on({ event1: eventSet });
-
-         notify.once('event1', eventSet);
-         notify.once({ event1: eventSet });
-
-         notify.off('event1', eventSet);
-
-         emit();
-
-         if (count.event1 !== 0) {
-            throw new Error();
-         }
-      });
-
+            expect(notify.countHandlers()).to.have.not.keys(['test', 'test2']);
+         });
+      })
    });
 
    describe('#emit()', () => {
-      it('without error', () => {
-         defCount();
-
-         notify = new Notify({
-            event1: [
-               x => { count.event1 = count.event1 + x },
-               x => { count.event1 = count.event1 + x }
-            ]
+      it('simple', () => {
+         notify.off().on({
+            test: [test, test2]
          });
 
-         notify.emit('event1', 1);
-
-         if (count.event1 !== 2) {
-            throw new Error();
-         }
+         assert.equal(notify.emit('test'), 11);
       });
 
-      it('with error', () => {
-         defCount();
-
-         notify = new Notify({
-            event1: [
-               x => { count.event1 = count.event1 + x; return new Error(); },
-               x => { count.event1 = count.event1 + x }
-            ]
+      it('error', () => {
+         notify.off().on({
+            test: [test, testErr, test2]
          });
 
-         notify.emit('event1', 1);
 
-         // console.log(count)
-
-         if (count.event1 !== 1) {
-            throw new Error();
-         }
-      });
-
-      it('once', () => {
-         defCount();
-
-         notify = new Notify(null, {
-            event1: [
-               x => { count.event1++ },
-               x => { count.event1++ }
-            ]
-         });
-
-         emit();
-
-         if (count.event1 !== 2) {
-            throw new Error();
-         }
+         assert.equal(notify.emit('test', 10).prevResult, 11);
       });
    });
 
-   it('#destoy subscriber', () => {
-      notify = new Notify();
-
-      let test = {
-         func: function() {
-            console.log('test');
-         }
-      };
-
-      notify.on('test', test.func);
-
-      notify.emit('test');
-
-      test = null;
-
-      notify.emit('test');
-   });
 });
