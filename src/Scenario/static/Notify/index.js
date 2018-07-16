@@ -1,4 +1,5 @@
 import { on, off, emit } from './common';
+import { defProp } from '../common';
 
 export default class Notify {
 
@@ -54,25 +55,35 @@ export default class Notify {
          return emit(_on, nameEvent, ...args);
       };
 
-      this.handlers = () => {
-         return Object.keys(_on);
-      };
+      defProp(this, 'handlers', {
+         /**
+          * @returns {String[]}
+          */
+         get: () => {
+            return Object.keys(_on);
+         }
+      });
 
-      this.countHandlers = () => {
-         return this.handlers().reduce((result, ev) => {
-            result[ev] = _on[ev].reduce((result, config) => {
-               if (config.once) {
-                  result.once++;
-               } else {
-                  result.on++;
-               }
+      defProp(this, 'countHandlers', {
+         /**
+          * @returns {Object}
+          */
+         get: () => {
+            return this.handlers.reduce((result, ev) => {
+               result[ev] = _on[ev].reduce((result, config) => {
+                  if (config.once) {
+                     result.once++;
+                  } else {
+                     result.on++;
+                  }
+
+                  return result;
+               }, { on: 0, once: 0});
 
                return result;
-            }, { on: 0, once: 0});
-
-            return result;
-         }, {});
-      };
+            }, {});
+         }
+      });
 
       this.on(options.on);
       this.once(options.once);

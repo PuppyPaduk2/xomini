@@ -1,139 +1,41 @@
 import Scene from '../Scene';
 import State from '../State';
-import log, { err } from '../common';
+import chai from 'chai';
+
+const assert = chai.assert;
 
 let scene;
-let values1 = { name: 'player' };
-let values2 = { name: 'User name', count: 1 };
+let values1 = { name: 'User name', count: 1 };
+let values2 = { name: 'player' };
+let values3 = { count: 2 };
 
 describe('Scene', () => {
-   it('simple example', () => {
+   it('#new()', () => {
       scene = new Scene({
-         state: new State(values1)
-      });
-
-      scene.values = values2;
-
-      if (scene.values.name !== 'player') {
-         err();
-      }
-   });
-
-   it('#run()', () => {
-      scene = new Scene();
-
-      scene.begin = true;
-      scene.begin = false;
-      scene.end = true;
-      scene.end = false;
-
-      if (scene.begin === false || scene.end === false) {
-         err();
-      }
-   });
-
-   it('change values after #run()', () => {
-      scene = new Scene({
-         state: new State(values1)
-      });
-
-      scene.run().stop();
-
-      scene.values = values2;
-
-      if (scene.values.name !== 'player') {
-         err();
-      }
-   });
-
-   it('set executor and subscribe on events', () => {
-      scene = new Scene({
+         name: '@scene',
          state: new State(values1),
-         executor: (values, res) => {
-            log('executor', values);
+         executor: (res, scene) => {
+            console.log('@executor');
+            scene.values = values2;
          }
-      });
-
-      scene.on({
-         begin: function() {
-            this.values = { name: 'begin' };
-         },
-         change: (values, res, scene) => {
-            log('change', values);
-
-            if (values.name === 'begin @3') {
-               scene.values = { name: 'begin @END' };
-               res();
-            }
-         },
-         end: function() {
-            this.values = { name: 'end' };
-            log('end >>>', this.values);
-         }
-      });
-
-      scene.run();
-
-      scene.values = { name: 'begin @2' };
-      scene.values = { name: 'begin @3' };
-
-      scene.run();
-
-      scene.values = { name: 'begin @2' };
-
-      if (!(scene.executor instanceof Function)) {
-         err();
-      }
-
-      if (scene.values.name !== 'begin @END') {
-         err();
-      }
-   });
-
-   it('next scene', () => {
-      const sceneZero = new Scene({
-         name: '@sceneZero',
-         state: new State(values2),
-         handlers: {
+      }, {
+         on: {
             change: (values, res) => {
-               log('sceneZero:change', values);
-               res();
+               console.log('@change', values);
             }
-         }
-      });
-
-      scene = new Scene({
-         name: '@firstScene',
-         state: new State(values1),
-         next: sceneZero,
-         handlersOnce: {
-            end: (scene, next) => {
-               log('end', scene.name, next.name);
+         },
+         once: {
+            begin: () => {
+               console.log('@begin');
             },
-            next: () => {
-               log('next');
+            end: () => {
+               console.log('@end');
             }
          }
-      });
-
-      scene.on('change', (values, res) => {
-         log('scene:change', values);
-         res();
       });
 
       scene.run();
-
-      scene.values = { name: 'pl' };
-      scene.values = { name: 'name' };
-      scene.values = { name: 123 };
-
-      log('sceneZero', sceneZero.values);
-
-      sceneZero.values = { name: 'pl' };
-      sceneZero.values = { name: 'name' };
-      sceneZero.values = { name: 123 };
-
-      log('sceneZero', sceneZero.values);
-
+      scene.values = values3;
+      scene.stop();
    });
 });

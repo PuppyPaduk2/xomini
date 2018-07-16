@@ -20,3 +20,7 @@ export default function(...args) {
 export function err(messame) {
    throw new Error(messame || '');
 };
+
+export function defProp(...args) {
+   Object.defineProperty(...args);
+};

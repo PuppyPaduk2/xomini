@@ -1,21 +1,19 @@
 import Notify from './Notify';
-
-function defProp(...args) {
-   Object.defineProperty(...args);
-};
+import { defProp } from './common';
 
 export default class State extends Notify {
 
    /**
-    * @param {Object} values
+    * @param {Object} defValues
     * @param {Object} [handlers]
     */
-   constructor(values = {}, handlers = {}) {
+   constructor(defValues = {}, handlers = {}) {
       super(handlers);
 
+      let values = {};
       let prev = {};
       let change = {};
-      const format = Object.keys(values);
+      const format = Object.keys(defValues);
 
       defProp(this, 'prev', {
          get: () => {
@@ -55,6 +53,8 @@ export default class State extends Notify {
             }
          }
       });
+
+      this.values = defValues;
    };
 
    /**
