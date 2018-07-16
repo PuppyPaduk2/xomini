@@ -1,4 +1,7 @@
 import State from '../State';
+import chai from 'chai';
+
+const assert = chai.assert;
 
 let state;
 let values1 = { name: 'player' };
@@ -6,54 +9,43 @@ let values2 = { name: 'name player', count: 2 };
 let values3 = { name: 'user name', count: 3 };
 
 describe('State', () => {
-   it('format null', () => {
-      state = new State();
-
-      state.values = values1;
-
-      if (state.values.name) {
-         throw new Error();
-      }
-   });
-
-   it('exist format', () => {
-      state = new State(values1);
-
-      if (state.values.name !== 'player') {
-         throw new Error();
-      }
-   });
-
-   it('set values', () => {
-      state = new State(values1);
-
-      state.values = values2;
-
-      if (state.values.name !== 'name player'
-         || !!state.values.count) {
-         throw new Error();
-      }
-   });
-
-   it('subcribe on event "change"', () => {
-      let count = 0;
-
-      state = new State(values1, {
-         handlers: {
-            change: () => { count++; }
-         },
-         handlersOnce: {
-            change: () => { count++; }
-         }
+   describe('#new()', () => {
+      it('without params', () => {
+         state = new State();
       });
 
-      state.on('change', () => { count++; });
+      it('with params', () => {
+         state = new State(values1);
+      });
+   });
 
-      state.values = values2;
-      state.values = values2;
+   describe('props', () => {
+      it('#values', () => {
+         state.values = values2;
+         assert.equal(state.values.name, 'name player');
+         assert.equal(state.values.count, undefined);
+      });
 
-      if (count !== 3) {
-         throw new Error();
-      }
+      it('#prev', () => {
+         assert.equal(state.prev.name, 'player');
+         assert.equal(state.prev.count, undefined);
+      });
+
+      it('#change', () => {
+         assert.equal(state.change.name, 'name player');
+         assert.equal(state.change.count, undefined);
+      });
+   });
+
+   describe('handlers', () => {
+      it('change', () => {
+         state.on('change', (val) => {
+            state.values = { name: 'new user name' };
+         });
+
+         state.values = values3;
+
+         assert.equal(state.values.name, 'new user name');
+      });
    });
 });
