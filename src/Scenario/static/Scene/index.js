@@ -1,6 +1,6 @@
-import Element from './Element';
-import State from './State';
-import { defProp } from './common';
+import Element from '../Element';
+import State from '../State';
+import { defProp } from '../common';
 
 export default class Scene extends Element {
    /**
@@ -179,4 +179,18 @@ function onState(res) {
    }
 
    return handlers;
+};
+
+/**
+ * @param {State} state
+ * @param {Function|Function[]} change
+ */
+export function fastCreate(state, change) {
+   return new Scene({
+      state: state
+   }, {
+      on: {
+         change: change
+      }
+   });
 };
