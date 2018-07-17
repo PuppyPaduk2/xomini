@@ -16,7 +16,6 @@ export default class Scene extends Element {
 
       let state = null;
       let executor = null;
-      let next = null;
       let stateHandlers;
 
       defProp(this, 'state', {
@@ -69,23 +68,6 @@ export default class Scene extends Element {
          }
       });
 
-      defProp(this, 'next', {
-         /**
-          * @return {Scene}
-          */
-         get: () => {
-            return next;
-         },
-         /**
-          * @param {Scene} value
-          */
-         set: (value) => {
-            if (!this.begin && value instanceof Scene) {
-               next = value;
-            }
-         }
-      });
-
       this.name = options.name;
       this.state = options.state;
       this.executor = options.executor;
@@ -114,8 +96,9 @@ export default class Scene extends Element {
       };
 
       this.stop = () => {
+         this.end = true;
+
          if (this.state) {
-            this.end = true;
             this.state.off(stateHandlers);
             stateHandlers = undefined;
          }
@@ -139,16 +122,6 @@ function stop(res) {
 
       if (res instanceof Function) {
          res();
-      }
-
-      if (this.next) {
-         this.next.state = this.state;
-
-         const resEmit = this.emit('next', this.next, this.state, this);
-
-         if (!(resEmit instanceof Error)) {
-            this.next.run();
-         }
       }
    }
 };

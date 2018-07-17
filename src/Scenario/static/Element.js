@@ -1,5 +1,5 @@
 import Notify from './Notify';
-import { defProp } from './common';
+import { defProps } from './common';
 
 export default class Element extends Notify {
 
@@ -12,69 +12,93 @@ export default class Element extends Notify {
       let begin = false;
       let end = false;
       let name = '';
+      let next = null;
 
-      defProp(this, 'begin', {
-         /**
-          * @returns {Boolean}
-          */
-         get: () => {
-            return begin;
-         },
-         /**
-          * @param {Boolean} value
-          */
-         set: (value) => {
-            value = !!value;
+      defProps(this, {
+         begin: {
+            /**
+             * @returns {Boolean}
+             */
+            get: () => {
+               return begin;
+            },
+            /**
+             * @param {Boolean} value
+             */
+            set: (value) => {
+               value = !!value;
 
-            if (value && !begin) {
-               begin = value;
-               this.emit('begin', this, ...getArgs.call(this, '_argsEmitBegin'));
+               if (value && !begin) {
+                  begin = value;
+                  this.emit('begin', this);
+               }
             }
-         }
-      });
-
-      defProp(this, 'end', {
-         /**
-          * @returns {Boolean}
-          */
-         get: () => {
-            return end;
          },
-         /**
-          * @param {Boolean} value
-          */
-         set: (value) => {
-            value = !!value;
+         end: {
+            /**
+             * @returns {Boolean}
+             */
+            get: () => {
+               return end;
+            },
+            /**
+             * @param {Boolean} value
+             */
+            set: (value) => {
+               value = !!value;
 
-            if (value && this.pending) {
-               end = value;
-               this.emit('end', this, ...getArgs.call(this, '_argsEmitEnd'));
+               if (value && this.pending) {
+                  end = value;
+                  this.emit('end', this);
+
+                  if (next) {
+                     const resultEmit = this.emit('next', next, this);
+
+                     if (!(resultEmit instanceof Error)) {
+                        next.run();
+                     }
+                  }
+               }
             }
-         }
-      });
-
-      defProp(this, 'pending', {
-         /**
-          * @returns {Boolean}
-          */
-         get: () => {
-            return !!begin && !end;
-         }
-      });
-
-      defProp(this, 'name', {
-         /**
-          * @returns {String}
-          */
-         get: () => {
-            return name;
          },
-         /**
-          * @param {String} value
-          */
-         set: (value) => {
-            if (!this.begin && typeof value === 'string') {
-               name = value;
+         pending: {
+            /**
+             * @returns {Boolean}
+             */
+            get: () => {
+               return !!begin && !end;
+            }
+         },
+         name: {
+            /**
+             * @returns {String}
+             */
+            get: () => {
+               return name;
+            },
+            /**
+             * @param {String} value
+             */
+            set: (value) => {
+               if (!this.begin && typeof value === 'string') {
+                  name = value;
+               }
+            }
+         },
+         next: {
+            /**
+             * @return {Element}
+             */
+            get: () => {
+               return next;
+            },
+            /**
+             * @param {Element} value
+             */
+            set: (value) => {
+               if (!this.begin && value instanceof Element) {
+                  next = value;
+               }
             }
          }
       });
@@ -89,14 +113,4 @@ export default class Element extends Notify {
       };
    };
 
-};
-
-
-/**
- * @param {String} nameProp
- */
-function getArgs(nameProp) {
-   const func = this[nameProp];
-   const args = func instanceof Function ? func : [];
-   return args instanceof Array ? args : [];
 };

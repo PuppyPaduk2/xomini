@@ -38,4 +38,38 @@ describe('Element', () => {
          assert(element.begin === false, true);
       });
    });
+
+   describe('#run()', () => {
+      it('simple', () => {
+         count = 0;
+
+         element = new Element({
+            once: {
+               next: () => {
+                  count++;
+               }
+            }
+         });
+
+         element.next = new Element({
+            once: {
+               begin: () => {
+                  count++;
+               },
+               end: () => {
+                  count++;
+               }
+            }
+         });
+
+         element.run();
+      });
+   });
+
+   describe('#stop()', () => {
+      it('simple', () => {
+         element.stop().next.stop();
+         assert(count, 3);
+      });
+   });
 });

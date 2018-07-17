@@ -114,4 +114,31 @@ describe('Scene', () => {
       assert.equal(scene.values.name, '@newUser');
       assert.equal(scene.values.count, 0);
    });
+
+   it('#next', () => {
+      let count = 0;
+
+      scene.off().stop().reset();
+      scene.next = new Scene({}, {
+         once: {
+            begin: (sceneNext) => {
+               count++;
+               sceneNext.stop();
+            },
+            end: () => {
+               count++;
+            }
+         }
+      });
+
+      scene.once({
+         next: (sceneNext) => {
+            count++;
+         }
+      });
+
+      scene.run().stop();
+
+      assert.equal(count, 3);
+   });
 });
