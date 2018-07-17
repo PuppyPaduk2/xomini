@@ -23,4 +23,19 @@ describe('Element', () => {
       assert(element.name, '@nameElement');
       assert(count, 2);
    });
+
+   describe('#reset()', () => {
+      it('no', () => {
+         element = new Element();
+         element.begin = true;
+         element.reset();
+         assert(element.begin, true);
+      });
+
+      it('yes', () => {
+         element.end = true;
+         element.reset();
+         assert(element.begin === false, true);
+      });
+   });
 });

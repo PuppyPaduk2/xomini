@@ -154,6 +154,8 @@ export function emit(handlers = {}, nameEvent, ...args) {
             if (result instanceof Error) {
                result.prevResult = prevResult;
                isBreak = true;
+            } else if (result === undefined && prevResult !== undefined) {
+               result = prevResult;
             }
          }
 

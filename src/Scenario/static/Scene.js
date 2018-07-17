@@ -124,6 +124,10 @@ export default class Scene extends Element {
       };
    };
 
+   rerun() {
+      this.stop().reset().run();
+   };
+
 };
 
 /**
@@ -139,8 +143,12 @@ function stop(res) {
 
       if (this.next) {
          this.next.state = this.state;
-         this.emit('next', this.next, this.state, this);
-         this.next.run();
+
+         const resEmit = this.emit('next', this.next, this.state, this);
+
+         if (!(resEmit instanceof Error)) {
+            this.next.run();
+         }
       }
    }
 };
@@ -157,7 +165,13 @@ function onState(res) {
 
       handlers = {
          change: (values) => {
-            this.emit('change', values, res, this);
+            const result = this.emit('change', values, res, this);
+
+            if (result instanceof Error) {
+               res();
+            } else if (result instanceof Object) {
+               this.values = result;
+            }
          }
       };
 

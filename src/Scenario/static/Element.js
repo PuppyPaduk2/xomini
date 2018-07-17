@@ -11,7 +11,7 @@ export default class Element extends Notify {
 
       let begin = false;
       let end = false;
-      let name = '';3
+      let name = '';
 
       defProp(this, 'begin', {
          /**
@@ -77,7 +77,16 @@ export default class Element extends Notify {
                name = value;
             }
          }
-      })
+      });
+
+      this.reset = () => {
+         if (this.end) {
+            begin = false;
+            end = false;
+         }
+
+         return this;
+      };
    };
 
 };
