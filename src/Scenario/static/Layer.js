@@ -7,15 +7,15 @@ export default class Layer extends Element {
    /**
     * @param {Object} [options]
     * @param {Object} [options.state]
-    * @param {Function[]} [options.scenes]
+    * @param {Function[]} [options.elements]
     * @param {Object} [handlers]
     */
    constructor(options = {}, handlers = {}) {
       super(handlers);
 
-      let scenes = [];
+      let elements = [];
       let state = null;
-      let scenesRun = 0;
+      let elementsRun = 0;
 
       defProps(this, {
          state: {
@@ -26,18 +26,34 @@ export default class Layer extends Element {
                if (value instanceof Object && !this.begin) {
                   state = new State(value);
 
-                  scenes.forEach(scene => scene.state = state);
+                  elements.forEach(element => element.state = state);
                }
             }
          },
-         scenes: {
+         elements: {
             /**
              * @param {Object[]} values
              */
             set: (values) => {
                if (values instanceof Array && !this.begin) {
-                  scenes = values.filter(value => value instanceof Function || value instanceof Array)
+                  elements = values.filter(value => value instanceof Function || value instanceof Array)
                      .map(value => fastCreate(state, value));
+
+                  if (!options.parallel) {
+                     elements.forEach((element, index) => {
+                        let next = elements[index + 1];
+
+                        if (next) {
+                           element.next = next;
+                        } else {
+                           element.on({
+                              end: (el) => {
+                                 console.log('@@end', state.values)
+                              }
+                           })
+                        }
+                     });
+                  }
                }
             }
          },
@@ -53,6 +69,7 @@ export default class Layer extends Element {
              */
             set: (values) => {
                if (values instanceof Object && this.pending && state) {
+                  console.log(elements[0].end, elements[1].begin);
                   state.values = values;
                }
             }
@@ -60,27 +77,31 @@ export default class Layer extends Element {
       });
 
       this.state = options.state;
-      this.scenes = options.scenes;
+      this.elements = options.elements;
 
       this.run = () => {
          this.begin = true;
 
-         scenesRun = scenes.length;
+         if (!!options.parallel) {
+            elementsRun = elements.length;
 
-         scenes.forEach(scene => scene.run().once({
-            end: () => {
-               scenesRun--;
+            elements.forEach(scene => scene.run().once({
+               end: () => {
+                  elementsRun--;
 
-               if (scenesRun === 0) {
-                  this.stop();
+                  if (elementsRun === 0) {
+                     this.stop();
+                  }
                }
-            }
-         }));
+            }));
+         } else {
+            elements[0].run();
+         }
       };
 
       this.stop = () => {
-         if (scenesRun !== 0) {
-            scenes.forEach(scene => scene.stop());
+         if (elementsRun !== 0) {
+            elements.forEach(scene => scene.stop());
          }
 
          this.end = true;

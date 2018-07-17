@@ -66,7 +66,7 @@ export default class Element extends Notify {
              * @returns {Boolean}
              */
             get: () => {
-               return !!begin && !end;
+               return !!this.begin && !this.end;
             }
          },
          name: {

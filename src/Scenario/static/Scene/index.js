@@ -118,6 +118,10 @@ export default class Scene extends Element {
  */
 function stop(res) {
    if (this.pending) {
+      if (this.next && this.state) {
+         this.next.state = this.state;
+      }
+
       this.stop();
 
       if (res instanceof Function) {
