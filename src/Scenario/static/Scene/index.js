@@ -165,12 +165,14 @@ function onState(res) {
 
       handlers = {
          change: (values) => {
-            const result = this.emit('change', values, res, this);
+            if (this.pending) {
+               const result = this.emit('change', values, res, this);
 
-            if (result instanceof Error) {
-               res();
-            } else if (result instanceof Object) {
-               this.values = result;
+               if (result instanceof Error) {
+                  res();
+               } else if (result instanceof Object) {
+                  this.values = result;
+               }
             }
          }
       };
