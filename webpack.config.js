@@ -22,7 +22,7 @@ module.exports = [
    }),
 
    defaultConfig({
-      dir: 'Scenario',
+      dir: 'state.io',
       entry: {
          'static/test': 'static/test'
       }

@@ -9,7 +9,7 @@
     "build:watch": "webpack --watch",
     "mocha": "./node_modules/.bin/mocha",
     "mocha:watch": "mocha -w",
-    "test:watch": "mocha -w ./dist/Scenario/static/test.js"
+    "test:watch": "mocha -w ./dist/state.io/static/test.js"
   },
   "author": "",
   "license": "ISC",
