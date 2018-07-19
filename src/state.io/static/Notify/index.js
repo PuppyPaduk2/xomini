@@ -10,11 +10,22 @@ export default class Notify {
       let handlers = {};
       let on = {};
       let once = {};
+      let listeners = {};
 
       defProps(this, {
          handlers: {
             get: () => {
                return { on: on, once: once };
+            }
+         },
+         event: {
+            /**
+             * @param {String} event
+             * @param {String} event.nameEvent
+             * @param {Array} event.args
+             */
+            set: (event) => {
+               console.log(event);
             }
          }
       });
@@ -24,42 +35,75 @@ export default class Notify {
        * @param {Notify} [context]
        */
       this.on = (addHandlers = {}, context = null) => {
-         if (context) {
-            if (context === this) {
-               console.log(123)
+         Object.keys(addHandlers).forEach(nameEvent => {
+            if (context instanceof Notify) {
+               context.addListener(this, nameEvent);
             } else {
-
+               this.addListener(this, nameEvent);
             }
-         } else {
-            this.on(addHandlers, this);
+
+            let addHandlersEvent = addHandlers[nameEvent];
+
+            if (!(addHandlersEvent instanceof Array)) {
+               addHandlersEvent = [addHandlersEvent];
+            }
+
+            addHandlersEvent.forEach(handler => {
+               eventExist(handlers, nameEvent);
+               eventExist(on, nameEvent);
+
+               handlers[nameEvent].push(handler);
+               on[nameEvent].push(handler);
+            });
+         });
+
+         return this;
+      };
+
+      /**
+       * @param {Notify} listener
+       * @param {String} nameEvents
+       */
+      this.addListener = (listener, nameEvent) => {
+         if (typeof nameEvent === 'string' && listener instanceof Notify) {
+            eventExist(listeners, nameEvent);
+
+            if (listeners[nameEvent].indexOf(listener) === -1) {
+               listeners[nameEvent].push(listener);
+            }
          }
+      };
 
-         // Object.keys(addHandlers).forEach(nameEvent => {
-         //    const addHandlersEvents = addHandlers[nameEvent] instanceof Array
-         //       ? addHandlers[nameEvent]
-         //       : [addHandlers[nameEvent]];
+      /**
+       * @param {String} nameEvent
+       */
+      this.emit = (nameEvent, ...args) => {
+         if (typeof nameEvent === 'string') {
+            let listenersEvent = listeners[nameEvent];
 
-         //    if (!(handlers[nameEvent] instanceof Array)) {
-         //       handlers[nameEvent] = [];
-         //    }
-
-         //    if (!(on[nameEvent] instanceof Array)) {
-         //       on[nameEvent] = [];
-         //    }
-
-         //    addHandlersEvents.forEach(handler => {
-         //       handler = {
-         //          value: handler,
-         //          context: context || this
-         //       };
-         //       handlers[nameEvent].push(handler);
-         //       on[nameEvent].push(handler);
-         //    });
-         // });
+            if (listenersEvent instanceof Array) {
+               listenersEvent.forEach(listener => {
+                  listener.event = {
+                     nameEvent: nameEvent,
+                     args: args
+                  };
+               });
+            }
+         }
 
          return this;
       };
 
       this.on(options.on);
    };
+};
+
+/**
+ * @param {Object} handlers
+ * @param {Array} nameEvent
+ */
+function eventExist(handlers, nameEvent) {
+   if (!(handlers[nameEvent] instanceof Array)) {
+      handlers[nameEvent] = [];
+   }
 };
