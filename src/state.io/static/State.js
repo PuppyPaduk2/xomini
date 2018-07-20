@@ -14,6 +14,7 @@ export default class State extends Notify {
       let values = {};
       let prev = {};
       let change = {};
+      let isInit = true;
 
       defProps(this, {
          prev: {
@@ -37,7 +38,7 @@ export default class State extends Notify {
                if (newValues instanceof Object) {
                   prev = {};
                   change = {};
-   
+
                   Object.keys(newValues).forEach((key) => {
                      let prevValue = values[key];
                      let newValue = newValues[key];
@@ -46,18 +47,42 @@ export default class State extends Notify {
                         prev[key] = prevValue;
                         change[key] = newValues[key];
                         values[key] = newValue;
+
+                        if (prevValue instanceof State) {
+                           this.off(prevValue);
+                        }
+
+                        if (newValue instanceof State) {
+                           this.on({
+                              change: () => {
+                                 this.emit('change', this.values, this);
+                              }
+                           }, newValue);
+                        }
                      }
                   });
                }
-   
-               if (Object.keys(change).length) {
-                  this.emit('change', values, this);
+
+               if (Object.keys(change).length && !isInit) {
+                  this.emit('change', this.values, this);
                }
             }
          }
       });
 
       this.values = defValues;
+      isInit = false;
+
+      this.collectValues = () => {
+         return Object.keys(values).reduce((result, name) => {
+            if (values[name] instanceof State) {
+               result[name] = values[name].collectValues();
+            } else {
+               result[name] = values[name];
+            }
+            return result;
+         }, {});
+      };
    };
 
    /**
