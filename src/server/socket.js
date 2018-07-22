@@ -1,25 +1,61 @@
+import Room from '../state.io/io/server/Room';
 import State from '../state.io/io/server/State';
 import StaticState from '../state.io/static/State';
 
 let staticState = new StaticState({
-   count: 0
+   count: 0,
+   user: new StaticState({
+      name: '@user'
+   })
 });
-let state;
 
 export default function(socket) {
+   let state;
+
+   // new Room(this, socket, new StaticState({
+   //    app: '@app'
+   // }));
+
+   socket.join('q')
+
+   new State(this.to('q'), staticState, {
+      on: {
+         change: () => {
+            console.log('@on:change')
+         }
+      }
+   });
 
    socket.on('signIn', (params) => {
-      console.log(params);
+      // let room = 'q';
 
-      socket.join('q');
+      // if (!this.to('q').state) {
+      //    console.log('@1');
+      //    this.to('q').state = staticState;
+      // } else {
+      //    console.log('@2');
+      // }
 
-      if (!state) {
-         state = new State(this.to('q'));
-      }
+      staticState.values = { count: staticState.values.count + 1 };
 
-      this.to('q')
-         .emit('state:change', '123', socket.id);
+      // new Room(this, socket, staticState, { room: params.room });
+
+      // if (socket.rooms[room]) {
+      //    staticState.values = { count: staticState.values.count + 1 };
+      // } else {
+         // socket.join(room, () => {
+      //       state = new State(this.to('q'), staticState);
+      //       staticState.values = { count: staticState.values.count + 1 };
+         // });
+      // }
 
    });
+
+   // socket.on('disconnect', () => {
+   //    if (state) {
+   //       state.off();
+   //       state = null;
+   //    }
+   // });
 
 };
