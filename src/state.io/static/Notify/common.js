@@ -110,3 +110,17 @@ export function handlersFilter(handlers, nameEvent, context = null, callback) {
       callback.call(this, removeContext, notremoveContext);
    };
 };
+
+/**
+ * @param {Object} handlers
+ * @param {Function} callback
+ */
+export function eachEventConfig(handlers, callback) {
+   if (handlers instanceof Object && callback instanceof Function) {
+      Object.keys(handlers).forEach(nameEvent => {
+         handlers[nameEvent].forEach(handler => {
+            callback.call(this, handler, nameEvent);
+         });
+      });
+   }
+};

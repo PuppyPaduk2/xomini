@@ -1,5 +1,5 @@
-import { defProps } from '../common';
-import { eventExist, onHadlers, handlersFilter } from './common';
+import { defProps } from '../../common';
+import { eventExist, onHadlers, handlersFilter, eachEventConfig } from './common';
 
 export default class Notify {
    /**
@@ -44,6 +44,7 @@ export default class Notify {
 
       /**
        * @param {Object} subHandlers
+       * @param {Notify} context
        */
       this.off = (subHandlers, context = null) => {
          if (subHandlers === undefined) {
@@ -154,6 +155,49 @@ export default class Notify {
          });
 
          return handlerResult;
+      };
+
+      /**
+       * @param {Object} hasHandler
+       * @param {Notify} context
+       */
+      this.hasHandler = (hasHandler, context = null) => {
+         let result = false;
+
+         if (hasHandler instanceof Notify) {
+            eachEventConfig.call(this, handlers, (handler) => {
+               if (handler.context === hasHandler) {
+                  result = true;
+               }
+            });
+         } else if (hasHandler instanceof Function) {
+            eachEventConfig.call(this, handlers, (handler) => {
+               let isContext = handler.context === context || context === null;
+
+               if (isContext && handler.callback === hasHandler) {
+                  result = true;
+               }
+            });
+         }
+
+         return result;
+      };
+
+      /**
+       * @param {Notify}
+       */
+      this.hasListener = (hasListener) => {
+         let result = false;
+
+         if (hasListener instanceof Notify) {
+            eachEventConfig.call(this, listeners, listener => {
+               if (hasListener === listener) {
+                  result = true;
+               }
+            });
+         }
+
+         return result;
       };
 
       this.on(options.on);

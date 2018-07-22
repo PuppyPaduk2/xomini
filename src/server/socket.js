@@ -1,5 +1,5 @@
-import State from '../Scenario/io/server/State';
-import StaticState from '../Scenario/static/State';
+import State from '../state.io/io/server/State';
+import StaticState from '../state.io/static/State';
 
 let staticState = new StaticState({
    count: 0

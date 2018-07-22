@@ -53,8 +53,9 @@ describe('Notify', () => {
          }
       });
 
-      notify1.emit('event').emit('event', true)
-         .emit('event', true);
+      notify1.emit('event');
+      notify1.emit('event', true);
+      notify1.emit('event', true);
    });
 
    it('off', () => {
@@ -132,5 +133,40 @@ describe('Notify', () => {
       });
 
       console.log('@notify1.handlers', notify1.handlers);
+   });
+
+   it('hasHandler', () => {
+      let notify1 = new Notify();
+      let notify2 = new Notify();
+      let notify3 = new Notify();
+      let func1 = () => {};
+      let func2 = () => {};
+      let func3 = () => {};
+
+      notify1.on({
+         event1: func1,
+         event2: func2
+      }, notify2);
+
+      console.log(notify1.hasHandler(func1));
+      console.log(notify1.hasHandler(func3));
+      console.log(notify1.hasHandler(func2, notify2));
+      console.log(notify1.hasHandler(func2, notify3));
+      console.log(notify1.hasHandler(notify2));
+      console.log(notify1.hasHandler(notify3));
+   });
+
+   it('hasListener', () => {
+      let notify1 = new Notify();
+      let notify2 = new Notify();
+      let notify3 = new Notify();
+      let notify4 = new Notify();
+
+      notify1.on({ event: () => {} }, notify2);
+      notify3.on({ event: () => {} }, notify2);
+
+      console.log(notify2.hasListener(notify1));
+      console.log(notify2.hasListener(notify3));
+      console.log(notify2.hasListener(notify4));
    });
 });
