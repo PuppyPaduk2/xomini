@@ -1,27 +1,6 @@
 import State from '../../static/State';
 
 /**
- * @param {Object} sockets
- */
-export function socketsInRoom(sockets) {
-   return Object.keys(sockets).reduce((result, id) => {
-      const socket = sockets[id];
-
-      Object.keys(socket.rooms).forEach(idRoom => {
-         if (idRoom !== id) {
-            if (!result[idRoom]) {
-               result[idRoom] = 0;
-            }
-
-            result[idRoom]++;
-         }
-      });
-
-      return result;
-   }, {});
-};
-
-/**
  * @param {Namespace} namespace
  * @param {String} nameRoom
  * @param {State} state
