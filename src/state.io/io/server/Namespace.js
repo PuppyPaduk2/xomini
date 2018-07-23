@@ -6,6 +6,7 @@ export default class Namespace extends Notify {
     * @param {Namespace} namespace
     * @param {Object} [handlers]
     * @param {Object} [options]
+    * @param {Object|State} [options.state]
     */
    constructor(namespace, handlers = {}, options = {}) {
       super(options);
@@ -15,9 +16,11 @@ export default class Namespace extends Notify {
        * @param {State} state
        * @param {Socket} socket
        */
-      this.join = (...args) => {
-         const result = Namespace.join(namespace, ...args);
-         this.emit('join', result, ...args);
+      this.join = (nameRoom, state, socket) => {
+         const result = Namespace.join(namespace, nameRoom, state, socket);
+
+         this.emit('join', result, nameRoom, state, socket);
+
          return result;
       };
 
@@ -34,6 +37,8 @@ export default class Namespace extends Notify {
             room = this.join(nameRoom, state, socket);
          }
 
+         Namespace.socketInRoom(room, socket);
+
          this.emit('joinOnce', room, nameRoom, state, socket);
 
          return room;
@@ -46,7 +51,6 @@ export default class Namespace extends Notify {
       this.leave = (...args) => {
          Namespace.leave(namespace, ...args);
          this.emit('leave', ...args);
-         return result;
       };
 
       /**
@@ -92,6 +96,7 @@ export default class Namespace extends Notify {
 
       if (!namespace.rooms[nameRoom]) {
          namespace.rooms[nameRoom] = {
+            name: nameRoom,
             state: null,
             change: null,
             sockets: []
@@ -107,20 +112,14 @@ export default class Namespace extends Notify {
 
          room.state = state;
          room.change = function() {
-            console.log('@room.change', state.collectValues());
+            namespace.to(nameRoom).emit('state:change', state.collectValues(), nameRoom);
          };
 
          state.on({ change: room.change });
 
-         if (socket && socket.join && room.sockets.indexOf(socket) === -1) {
-            room.sockets.push(socket);
+         Namespace.socketInRoom(room, socket);
 
-            if (!socket.roomsState) {
-               socket.roomsState = {};
-            }
-
-            socket.roomsState[nameRoom] = room;
-         }
+         namespace.to(nameRoom).emit('state:join', state.collectValues(), nameRoom);
       }
 
       return room;
@@ -150,10 +149,28 @@ export default class Namespace extends Notify {
 
    /**
     * @param {Namepace} namespace
-    * @param {String} nameRoom 
+    * @param {String} nameRoom
     */
    static has(namespace, nameRoom) {
       const room = !!namespace && !!namespace.rooms && namespace.rooms[nameRoom];
       return room ? room : false;
+   };
+
+   /**
+    * @param {Object} room
+    * @param {Socket} socket
+    */
+   static socketInRoom(room, socket) {
+      if (room && socket && socket.join && room.sockets.indexOf(socket) === -1) {
+         socket.join(room.name);
+
+         room.sockets.push(socket);
+
+         if (!socket.roomsState) {
+            socket.roomsState = {};
+         }
+
+         socket.roomsState[room.name] = room;
+      }
    };
 };
