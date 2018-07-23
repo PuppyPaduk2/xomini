@@ -1,5 +1,5 @@
 import Notify from './Notify';
-import { defProps } from './common';
+import { defProps } from '../common';
 
 export default class State extends Notify {
    /**

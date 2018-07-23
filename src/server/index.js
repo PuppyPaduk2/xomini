@@ -3,9 +3,8 @@ import express from 'express';
 import http from 'http';
 import io from 'socket.io';
 import main from './get/main';
-import socketConnection from './socket';
-import Namespace from '../state.io/io/server/Namespace';
-import StaticState from '../state.io/static/State';
+import State from '../state.io/static/State';
+import { join, leave, has} from '../state.io/io/server/common';
 
 const PORT = 3000;
 const app = express();
@@ -18,17 +17,30 @@ const serverIo = new io(server, {
 app.use(express.static(path.join('client')));
 app.get('/', main);
 
-let state = new StaticState({
-   count: 0
-});
 
-new Namespace(serverIo, {
-   handlers: {
-      signIn: (socket, params) => {
-         socket.join(params.room, state);
-         state.values = { count: state.values.count + 1 };
+serverIo.on('connection', (socket) => {
+
+   socket.on('signIn', params => {
+      let room = has(serverIo, params.room);
+
+      if (!room) {
+         room = join(serverIo, params.room, new State({
+            count: 0
+         }), socket);
       }
-   }
+
+      let state = room.state;
+
+      state.values = { count: state.values.count + 1 };
+   });
+
+   socket.on('disconnecting', () => {
+      if (socket.roomsState) {
+         Object.keys(socket.roomsState).forEach(nameRoom => {
+            leave(serverIo, nameRoom, socket);
+         });
+      }
+   });
 });
 
 server.listen(PORT, function() {
