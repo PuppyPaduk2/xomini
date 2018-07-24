@@ -23,8 +23,8 @@ export default class App extends Component {
          console.log('@state:join', ...args);
       });
 
-      socket.on('state:change', (...args) => {
-         console.log('@state:change', ...args);
+      socket.on('store:change', (...args) => {
+         console.log('@store:change', ...args);
       });
    };
 

@@ -19,12 +19,5 @@ module.exports = [
       stats: {
          warnings: false
       }
-   }),
-
-   defaultConfig({
-      dir: 'state.io',
-      entry: {
-         'static/test': 'static/test'
-      }
    })
 ];

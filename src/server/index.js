@@ -3,8 +3,8 @@ import express from 'express';
 import http from 'http';
 import io from 'socket.io';
 import main from './get/main';
-import State from '../state.io/static/State';
-import Namespace from '../state.io/io/server/Namespace';
+import { createStore } from '../socket-redux.io';
+import rootReducer from './reducers';
 
 const PORT = 3000;
 const app = express();
@@ -17,14 +17,11 @@ const serverIo = new io(server, {
 app.use(express.static(path.join('client')));
 app.get('/', main);
 
-new Namespace(serverIo, {
-   'signIn': function(socket, params) {
-      const state = this.joinOnce(params.room, {
-         count: 0
-      }, socket).state;
+var store = createStore(serverIo, rootReducer);
 
-      state.values = { count: state.values.count + 1 };
-   }
+serverIo.on('connection', () => {
+   store.dispatch({ type: 'ADD_ROOM', name: '@room' });
+   store.dispatch({ type: 'ADD_ROOM', name: '@room' });
 });
 
 server.listen(PORT, function() {
