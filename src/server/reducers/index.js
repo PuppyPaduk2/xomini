@@ -1,36 +1,33 @@
 import { combineReducers } from 'redux';
+import { reducer } from '../../socket-redux.io';
 
-export default {
-   rooms: (state = [], action) => {
-      if (action.type === 'ADD_ROOM') {
-         return [
-            ...state,
-            action.name
-         ];
-      }
+/**
+ * @param {Socket} socket
+ */
+export default function(socket) {
+   return combineReducers({
+      user: combineReducers({
+         name: reducer((state = '', action) => {
+            if (action.type === 'SET_NAME') {
+               return action.value;
+            }
 
-      return state;
-   },
-   users: (state = [], action) => {
-      if (action.type === 'ADD_USER') {
-         return [
-            ...state,
-            action.name
-         ];
-      }
+            return state;
+         }, socket),
+         lastName: reducer((state = '', action) => {
+            if (action.type === 'SET_LASTNAME') {
+               return action.value;
+            }
 
-      return state;
-   },
-   lastChange: combineReducers({
-      user: (state = null, action) => {
-         if (action.type === 'ADD_USER') {
-            return action.name;
+            return state;
+         }, socket)
+      }),
+      rooms: reducer((state = [], action) => {
+         if (action.type === 'ADD_ROOM' && state.indexOf(action.value) === -1) {
+            return [...state, action.value];
          }
 
          return state;
-      },
-      password: (state = null, action) => {
-         return state;
-      }
-   })
+      }, socket)
+   });
 };
