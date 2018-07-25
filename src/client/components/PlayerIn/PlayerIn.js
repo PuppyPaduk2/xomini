@@ -13,7 +13,7 @@ export default class PlayerIn extends Component {
 
    state = {
       room: '',
-      name: '',
+      login: '',
       openMessageError: false
    };
 
@@ -25,14 +25,10 @@ export default class PlayerIn extends Component {
 
    send = () => {
       const props = this.props;
-      const state = this.state;
 
       if (this.isValid()) {
          if (props.onSend instanceof Function) {
-            props.onSend({
-               room: state.room,
-               name: state.name
-            });
+            props.onSend(this.state);
          }
       } else {
          this.toggleMessageError(true);
@@ -65,8 +61,8 @@ export default class PlayerIn extends Component {
 
             <TextField
                label="Name"
-               value={state.name}
-               onChange={this.changeText('name')}
+               value={state.login}
+               onChange={this.changeText('login')}
                margin="normal"
             />
 

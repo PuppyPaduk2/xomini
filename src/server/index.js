@@ -3,8 +3,9 @@ import express from 'express';
 import http from 'http';
 import io from 'socket.io';
 import main from './get/main';
-import reducers from './reducers';
 import { createStore } from 'redux';
+import { prevStateReducers } from '../reducers';
+import { add as addUser } from '../reducers/users';
 
 const PORT = 3000;
 const app = express();
@@ -17,19 +18,30 @@ const serverIo = new io(server, {
 app.use(express.static(path.join('client')));
 app.get('/', main);
 
-const store = createStore(reducers(serverIo));
+let socket1 = null;
+const reducers = prevStateReducers({
+   users: action => {
+      console.log('@user:change', socket1.id, action);
+   }
+})
+const store = createStore(reducers);
 
 serverIo.on('connection', socket => {
-   store.dispatch({ type: 'SET_NAME', value: '@userName' });
-   store.dispatch({ type: 'SET_LASTNAME', value: '@userLastName' });
+   console.log('@connection');
 
-   socket.on('signIn', params => {
-      store.dispatch({ type: 'ADD_ROOM', value: params.room });
+   socket1 = socket;
 
-      console.log(store.getState());
-   });
+   const params = { room: 'MyRoom', login: '@myLogin' };
 
-   console.log(store.getState());
+   store.dispatch(addUser(params));
+   store.dispatch(addUser(params));
+
+   // console.log(store.getState());
+
+   // socket.on('signIn', params => {
+   //    store.dispatch(addUser(params));
+   //    console.log(store.getState());
+   // });
 });
 
 server.listen(PORT, function() {
