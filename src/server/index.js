@@ -4,7 +4,7 @@ import http from 'http';
 import io from 'socket.io';
 import main from './get/main';
 import { createStore } from 'redux';
-import { changerStore } from '../reducers';
+import changerStore from '../reducers';
 import { add as addUser } from '../reducers/users';
 
 const PORT = 3000;
@@ -18,39 +18,20 @@ const serverIo = new io(server, {
 app.use(express.static(path.join('client')));
 app.get('/', main);
 
-let socket1 = null;
-const handlers = [action => {
-   console.log('@user:change');
-}, action => {
-   console.log('@user:change:1');
-}];
-const changer = changerStore({
-   users: handlers
-});
-const store = createStore(changer.reducers);
+const store = createStore(changerStore.reducers);
 
 serverIo.on('connection', socket => {
    console.log('@connection');
 
-   socket1 = socket;
-
-   const params = { room: 'MyRoom', login: '@myLogin' };
-   const cb = action => {
-      console.log('@connection:change');
+   const changeUsers = () => {
+      console.log('@changeUsers');
+   };
+   const changeTest = () => {
+      console.log('@changeTest');
    };
 
-   changer.subscribe('users', cb);
-   changer.unsubscribe('users', handlers, cb);
-
-   store.dispatch(addUser(params));
-   store.dispatch(addUser(params));
-
-   // console.log(store.getState());
-
-   // socket.on('signIn', params => {
-   //    store.dispatch(addUser(params));
-   //    console.log(store.getState());
-   // });
+   changerStore.subscribe('users', changeUsers);
+   changerStore.subscribe('test', changeTest);
 });
 
 server.listen(PORT, function() {
