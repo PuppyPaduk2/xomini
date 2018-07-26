@@ -26,7 +26,7 @@ export class App extends Component {
 
    playerInOnSend = (params) => {
       const { login, room } = params;
-      this.socket.emit('signIn', {
+      this.socket.emit('inRoom', {
          login,
          room
       });

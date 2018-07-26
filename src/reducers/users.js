@@ -13,11 +13,16 @@ function createUser(params) {
 };
 
 export default function(store = {}, action) {
-   const value = action.value;
-
    if (action.type === types.add) {
-      if (!store[value.login]) {
-         return { ...store, [value.login]: value };
+      const login = action.login;
+
+      if (!store[login]) {
+         return {
+            ...store,
+            [login]: {
+               room: action.room
+            }
+         };
       } else {
          action.isExist = true;
       }
@@ -34,9 +39,7 @@ export default function(store = {}, action) {
 export function add(login = null, room = null) {
    return {
       type: 'ADD_USER',
-      value: {
-         login,
-         room
-      }
+      login,
+      room
    };
 };

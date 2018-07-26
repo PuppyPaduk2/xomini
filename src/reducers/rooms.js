@@ -2,7 +2,7 @@ import { types as usersTypes } from './users';
 
 export default function(store = {}, action) {
    if (action.type === usersTypes.add && !action.isExist) {
-      const { room, login } = action.value;
+      const { room, login } = action;
       let storeRoom = store[room];
 
       if (storeRoom && storeRoom.users.indexOf(login) === -1) {
@@ -11,7 +11,6 @@ export default function(store = {}, action) {
          return {
             ...store,
             [room]: {
-               name: room,
                users: [login]
             }
          };

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App/App';
 import { createStore } from 'redux';
-import changerStore from '../reducers';
+import reducers from '../reducers';
 import { Provider } from 'react-redux';
 import { add as addUser } from '../reducers/users';
 
@@ -16,7 +16,7 @@ import GameSpaceStyle from './components/GameSpace/GameSpace.less';
 let initialData = document.getElementById('initial-data').getAttribute('data-json');
 initialData = typeof initialData === 'string' ? JSON.parse(initialData) : {};
 
-const store = createStore(changerStore.reducers, initialData.store);
+const store = createStore(reducers, initialData.store);
 
 console.log(store.getState());
 

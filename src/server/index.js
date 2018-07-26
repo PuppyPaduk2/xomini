@@ -4,7 +4,7 @@ import http from 'http';
 import io from 'socket.io';
 import main from './get/main';
 import { createStore } from 'redux';
-import changerStore from '../reducers';
+import reducers from '../reducers';
 import { add as addUser } from '../reducers/users';
 
 const PORT = 3000;
@@ -14,7 +14,7 @@ const serverIo = new io(server, {
    serveClient: false,
    wsEngine: 'ws'
 });
-const store = createStore(changerStore.reducers);
+const store = createStore(reducers);
 
 app.use(express.static(path.join('client')));
 app.use((req, res, next) => {
@@ -23,13 +23,19 @@ app.use((req, res, next) => {
 });
 app.get('/', main);
 
-serverIo.on('connection', socket => {
-   console.log('@connection');
+store.dispatch(addUser('@user', '@room'));
+store.dispatch(addUser('@user', '@room'));
+store.dispatch(addUser('@user', '@room'));
 
-   socket.on('signIn', params => {
-      store.dispatch(addUser(params.login, params.room));
-   });
-});
+console.log(store.getState());
+
+// serverIo.on('connection', socket => {
+//    console.log('@connection');
+
+//    socket.on('inRoom', params => {
+//       store.dispatch(addUser(params.login, params.room));
+//    });
+// });
 
 server.listen(PORT, function() {
    console.log(`Example app listening on port ${PORT}!`);
