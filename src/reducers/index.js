@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
-import changer from './changer';
-import changerStore from './changerStore';
+import { changer, changerStore } from '../changer';
 import users from './users';
 import rooms from './rooms';
 
