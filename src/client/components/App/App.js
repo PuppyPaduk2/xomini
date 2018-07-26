@@ -1,31 +1,23 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
 import createSocket from '../../common/createSocket';
-import colors from './colors';
-import _ from 'lodash';
+import palette from './palette';
 
 import PlayerIn from '../PlayerIn/PlayerIn';
 import Players from '../Players/Players';
 import GameSpace from '../GameSpace/GameSpace';
 import Button from '@material-ui/core/Button';
 
-export default class App extends Component {
-   state = _.merge({
-      palette: colors,
+export class App extends Component {
+   state = {
+      palette,
       isSignIn: false
-   });
+   };
 
    componentDidMount() {
       const socket = createSocket();
-
       this.socket = socket;
-
-      socket.on('state:join', (...args) => {
-         console.log('@state:join', ...args);
-      });
-
-      socket.on('store:change', (...args) => {
-         console.log('@store:change', ...args);
-      });
    };
 
    onClickBegin = () => {
@@ -33,7 +25,11 @@ export default class App extends Component {
    };
 
    playerInOnSend = (params) => {
-      this.socket.emit('signIn', params);
+      const { login, room } = params;
+      this.socket.emit('signIn', {
+         login,
+         room
+      });
    };
 
    render() {
@@ -72,5 +68,6 @@ export default class App extends Component {
          </div>
       );
    };
+};
 
-}
+export default connect()(App);

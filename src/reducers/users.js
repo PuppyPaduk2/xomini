@@ -31,9 +31,12 @@ export default function(store = {}, action) {
  * @param {String} params.login
  * @param {String} params.room
  */
-export function add(params) {
+export function add(login = null, room = null) {
    return {
       type: 'ADD_USER',
-      value: createUser(params)
+      value: {
+         login,
+         room
+      }
    };
 };

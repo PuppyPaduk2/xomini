@@ -14,24 +14,21 @@ const serverIo = new io(server, {
    serveClient: false,
    wsEngine: 'ws'
 });
+const store = createStore(changerStore.reducers);
 
 app.use(express.static(path.join('client')));
+app.use((req, res, next) => {
+   req.store = store;
+   next();
+});
 app.get('/', main);
-
-const store = createStore(changerStore.reducers);
 
 serverIo.on('connection', socket => {
    console.log('@connection');
 
-   const changeUsers = () => {
-      console.log('@changeUsers');
-   };
-   const changeTest = () => {
-      console.log('@changeTest');
-   };
-
-   changerStore.subscribe('users', changeUsers);
-   changerStore.subscribe('test', changeTest);
+   socket.on('signIn', params => {
+      store.dispatch(addUser(params.login, params.room));
+   });
 });
 
 server.listen(PORT, function() {
