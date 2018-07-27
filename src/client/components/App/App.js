@@ -17,7 +17,12 @@ export class App extends Component {
 
    componentDidMount() {
       const socket = createSocket();
+
       this.socket = socket;
+
+      socket.on('socket:disconnect', action => {
+         console.log(action)
+      });
    };
 
    onClickBegin = () => {

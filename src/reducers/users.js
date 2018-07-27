@@ -1,5 +1,6 @@
 export const types = {
-   add: 'ADD_USER'
+   add: 'ADD_USER',
+   remove: 'REMOVE_USER'
 };
 
 /**
@@ -13,18 +14,30 @@ function createUser(params) {
 };
 
 export default function(store = {}, action) {
-   if (action.type === types.add) {
-      const login = action.login;
+   const { type, login, room } = action;
+
+   if (type === types.add) {
 
       if (!store[login]) {
          return {
             ...store,
             [login]: {
-               room: action.room
+               room
             }
          };
       } else {
          action.isExist = true;
+      }
+   } else if (type === types.remove) {
+      const user = store[login];
+
+      if (user) {
+         action.room = user.room;
+         action.isExist = true;
+         delete store[login];
+         return {
+            ...store
+         };
       }
    }
 
@@ -36,10 +49,17 @@ export default function(store = {}, action) {
  * @param {String} params.login
  * @param {String} params.room
  */
-export function add(login = null, room = null) {
+export function addUser(login = null, room = null) {
    return {
-      type: 'ADD_USER',
+      type: types.add,
       login,
       room
+   };
+};
+
+export function removeUser(login) {
+   return {
+      type: types.remove,
+      login
    };
 };

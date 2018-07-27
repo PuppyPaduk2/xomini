@@ -5,7 +5,7 @@ import io from 'socket.io';
 import main from './get/main';
 import { createStore } from 'redux';
 import reducers from '../reducers';
-import { add as addUser } from '../reducers/users';
+import { addUser, removeUser } from '../reducers/users';
 
 const PORT = 3000;
 const app = express();
@@ -23,19 +23,31 @@ app.use((req, res, next) => {
 });
 app.get('/', main);
 
-store.dispatch(addUser('@user', '@room'));
-store.dispatch(addUser('@user', '@room'));
-store.dispatch(addUser('@user', '@room'));
+serverIo.on('connection', socket => {
+   console.log('@connection');
 
-console.log(store.getState());
+   socket.on('inRoom', params => {
+      const { login } = params;
 
-// serverIo.on('connection', socket => {
-//    console.log('@connection');
+      socket.login = login;
 
-//    socket.on('inRoom', params => {
-//       store.dispatch(addUser(params.login, params.room));
-//    });
-// });
+      if (!store.getState().users[login]) {
+         const action = addUser(login, params.room);
+         store.dispatch(action);
+         serverIo.emit('userJoinInRom', action);
+      }
+   });
+
+   socket.on('disconnect', () => {
+      const { login } = socket;
+
+      if (login) {
+         const action = removeUser(login);
+         store.dispatch(action);
+         serverIo.emit('socket:disconnect', action);
+      }
+   });
+});
 
 server.listen(PORT, function() {
    console.log(`Example app listening on port ${PORT}!`);
