@@ -20,9 +20,21 @@ export class App extends Component {
 
       this.socket = socket;
 
-      socket.on('socket:disconnect', action => {
-         console.log(action)
+      socket.on('fetch:result', action => {
+         this.props.dispatch(action);
       });
+
+      socket.on('userJoinInRom', action => {
+         this.props.dispatch(action);
+      });
+
+      socket.on('socket:disconnect', action => {
+         this.props.dispatch(action);
+      });
+
+      setTimeout(() => {
+         socket.emit('fetch');
+      }, 0);
    };
 
    onClickBegin = () => {
@@ -42,6 +54,13 @@ export class App extends Component {
       let top;
       let center = <PlayerIn onSend={this.playerInOnSend} />;
       let bottom;
+      const users = this.props.users;
+
+      top = Object.keys(users).map((nameUser, index) => {
+         return (
+            <div key={index}>{nameUser}::{users[nameUser].room}</div>
+         );
+      });
 
       if (state.isSignIn) {
          // top = <Players players={state.players} />;
@@ -75,4 +94,8 @@ export class App extends Component {
    };
 };
 
-export default connect()(App);
+function test(store) {
+   return store;
+};
+
+export default connect(test)(App);

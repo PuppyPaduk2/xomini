@@ -18,7 +18,7 @@ initialData = typeof initialData === 'string' ? JSON.parse(initialData) : {};
 
 const store = createStore(reducers, initialData.store);
 
-console.log(store.getState());
+// console.log(store.getState());
 
 // changerStore.subscribe('users', action => {
 //    console.log('@users:change', action);

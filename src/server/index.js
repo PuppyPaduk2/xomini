@@ -5,6 +5,7 @@ import io from 'socket.io';
 import main from './get/main';
 import { createStore } from 'redux';
 import reducers from '../reducers';
+import { fetch } from '../reducers/actions';
 import { addUser, removeUser } from '../reducers/users';
 
 const PORT = 3000;
@@ -26,13 +27,16 @@ app.get('/', main);
 serverIo.on('connection', socket => {
    console.log('@connection');
 
+   socket.on('fetch', () => {
+      socket.emit('fetch:result', fetch(store.getState()));
+   });
+
    socket.on('inRoom', params => {
       const { login } = params;
 
-      socket.login = login;
-
-      if (!store.getState().users[login]) {
+      if (!socket.login && !store.getState().users[login]) {
          const action = addUser(login, params.room);
+         socket.login = login;
          store.dispatch(action);
          serverIo.emit('userJoinInRom', action);
       }

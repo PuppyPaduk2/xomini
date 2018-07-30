@@ -1,23 +1,11 @@
-export const types = {
-   add: 'ADD_USER',
-   remove: 'REMOVE_USER'
-};
+import { getTypes, typesAll } from './actions/types';
 
-/**
- * @param {Object} params
- * @param {String} params.login
- * @param {String} params.room
- */
-function createUser(params) {
-   const { login, room } = params;
-   return { login, room };
-};
+export const types = getTypes('user');
 
 export default function(store = {}, action) {
    const { type, login, room } = action;
 
    if (type === types.add) {
-
       if (!store[login]) {
          return {
             ...store,
@@ -39,6 +27,10 @@ export default function(store = {}, action) {
             ...store
          };
       }
+   } else if (type === typesAll.fetch && action.users) {
+      return {
+         ...action.users
+      };
    }
 
    return store;

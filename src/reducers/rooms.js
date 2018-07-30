@@ -1,4 +1,5 @@
 import { types as usersTypes } from './users';
+import { typesAll } from './actions/types';
 
 export default function(store = {}, action) {
    const { type } = action;
@@ -36,6 +37,10 @@ export default function(store = {}, action) {
             };
          }
       }
+   } else if (type === typesAll.fetch && action.rooms) {
+      return {
+         ...action.rooms
+      };
    }
 
    return store;
