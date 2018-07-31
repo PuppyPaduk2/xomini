@@ -6,7 +6,7 @@ import main from './get/main';
 import { createStore } from 'redux';
 import reducers from '../reducers';
 import { addUser, removeUser } from '../reducers/users';
-import { gameBegin, gameAddStep } from '../reducers/game/actions';
+import { gameAddUser, gameBegin, gameAddStep } from '../reducers/game/actions';
 
 const PORT = 3000;
 const app = express();
@@ -24,28 +24,15 @@ app.use((req, res, next) => {
 });
 app.get('/', main);
 
-store.dispatch(addUser('@user', '@game'));
-store.dispatch(gameBegin('@game'));
-store.dispatch(addUser('@user2', '@game'));
-store.dispatch(gameBegin('@game'));
-// store.dispatch(removeUser('@user', '@game'));
-// store.dispatch(removeUser('@user2', '@game'));
-
-store.dispatch(gameAddStep('@user', '#000'));
-store.dispatch(gameAddStep('@user2', '#000'));
-store.dispatch(gameAddStep('@user2', '#000'));
-store.dispatch(gameAddStep('@user', '#010'));
-// store.dispatch(removeUser('@user2'));
-store.dispatch(gameAddStep('@user', '#FFF'));
-store.dispatch(gameAddStep('@user', '#FFF'));
-store.dispatch(gameAddStep('@user', '#FFF'));
-store.dispatch(gameAddStep('@user', '#FFF'));
-store.dispatch(gameAddStep('@user2', '#FFF'));
-
-console.log(store.getState().games['@game']);
-
 serverIo.on('connection', socket => {
    console.log('@connection');
+
+   socket.on('inRoom', (login, room) => {
+      if (!store.getState().users[login]) {
+         store.dispatch(addUser(login, room));
+         serverIo.emit('userJoinInRom', gameAddUser(login));
+      }
+   });
 });
 
 server.listen(PORT, function() {

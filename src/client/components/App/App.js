@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { setConfig } from '../../../reducers/userConfig/actions';
 
 import createSocket from '../../common/createSocket';
 import palette from './palette';
 
 import PlayerIn from '../PlayerIn/PlayerIn';
-import Players from '../Players/Players';
-import GameSpace from '../GameSpace/GameSpace';
-import Button from '@material-ui/core/Button';
 
 export class App extends Component {
-   state = {
-      palette,
-      isSignIn: false
-   };
+   state = {};
 
    componentDidMount() {
       const socket = createSocket();
@@ -44,46 +39,19 @@ export class App extends Component {
 
    playerInOnSend = (params) => {
       const { login, room } = params;
-      this.socket.emit('inRoom', {
+      this.socket.emit('inRoom', login, room);
+      this.props.dispatch(setConfig({
          login,
-         room
-      });
+         signIn: true
+      }));
+
+      console.log(this);
    };
 
    render() {
-      const state = this.state;
       let top;
       let center = <PlayerIn onSend={this.playerInOnSend} />;
       let bottom;
-      const users = this.props.users;
-
-      top = Object.keys(users).map((nameUser, index) => {
-         return (
-            <div key={index}>{nameUser}::{users[nameUser].room}</div>
-         );
-      });
-
-      if (state.isSignIn) {
-         // top = <Players players={state.players} />;
-
-         // center = (
-         //    <GameSpace
-         //       map={state.map}
-         //       players={state.players}
-         //       palette={state.palette}
-         //    />
-         // );
-
-         // bottom = (
-         //    <Button
-         //       className="button-send"
-         //       color="primary"
-         //       onClick={this.onClickBegin}
-         //    >
-         //       Start
-         //    </Button>
-         // );
-      }
 
       return (
          <div className="app">

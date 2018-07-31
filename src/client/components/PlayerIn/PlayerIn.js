@@ -51,7 +51,7 @@ export default class PlayerIn extends Component {
       const state = this.state;
 
       return (
-         <div className="player-name">
+         <div className="player-name show-anim">
             <TextField
                label="Room"
                value={state.room}

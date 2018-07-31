@@ -7,7 +7,7 @@ import App from '../../client/components/App/App';
 
 export default function(req, res) {
    const initialData = {
-      store: req.store.getState()
+      // store: req.store.getState()
    };
    const htmlParams = {
       content: (
