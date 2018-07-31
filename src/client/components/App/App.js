@@ -17,19 +17,20 @@ export class App extends Component {
 
    componentDidMount() {
       const socket = createSocket();
+      const dispatch = this.props.dispatch;
 
       this.socket = socket;
 
       socket.on('fetch:result', action => {
-         this.props.dispatch(action);
+         dispatch(action);
       });
 
       socket.on('userJoinInRom', action => {
-         this.props.dispatch(action);
+         dispatch(action);
       });
 
       socket.on('socket:disconnect', action => {
-         this.props.dispatch(action);
+         dispatch(action);
       });
 
       setTimeout(() => {

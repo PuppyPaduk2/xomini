@@ -1,4 +1,5 @@
 import { getTypes, typesAll } from './actions/types';
+import { gameTypes } from './games/actions';
 
 export const types = getTypes('user');
 
@@ -27,6 +28,8 @@ export default function(store = {}, action) {
             ...store
          };
       }
+   } else if (type === gameTypes.step && login && store[login]) {
+      action.room = store[login].room;
    } else if (type === typesAll.fetch && action.users) {
       return {
          ...action.users
