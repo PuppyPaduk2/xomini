@@ -1,27 +1,21 @@
+import game from '../game';
+import { gameRemoveUser } from '../game/actions';
+
 export default function(store = {}, action) {
    const { room, login } = action;
-   const game = store[room];
+   let storeGame = store[room];
 
    if (game) {
-      const { users, usersOut } = game;
-      const index = users.indexOf(login);
+      storeGame = game(storeGame, gameRemoveUser(login));
 
-      if (!game.begin) {
-         users.splice(index, 1);
-
-         if (!users.length) {
-            delete store[room];
-            return { ...store };
-         }
+      if (storeGame.end) {
+         delete store[room];
+         return { ...store };
       } else {
-         if (index !== -1) {
-            usersOut.push(login);
-         }
-
-         if (users.length === usersOut.length) {
-            delete store[room];
-            return { ...store };
-         }
+         return {
+            ...store,
+            [room]: storeGame
+         };
       }
    }
 

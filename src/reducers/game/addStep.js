@@ -1,13 +1,13 @@
-export default function(store = {}, action) {
-   const { login, room, value } = action;
-   const game = store[room];
+import { defaultStore } from './index';
 
-   if (game && login && value !== undefined) {
-      let { step, state, users } = game;
+export default function(store = defaultStore(), action) {
+   let { step, state, users } = store;
+   let { login, value } = action;
 
+   if (store.begin && login && value !== undefined && users.indexOf(login) !== -1) {
       if (!step) {
          step = {};
-         game.step = step;
+         store.step = step;
       }
 
       if (!step[login]) {
@@ -16,13 +16,14 @@ export default function(store = {}, action) {
          const keysStep = Object.keys(step);
 
          if (keysStep.length === users.length) {
-            game.point = isUnic(keysStep.map(key => step[key])) ? 1 : -1;
-            game.summPoints += game.point;
-
+            store.point = isUnic(keysStep.map(key => step[key])) ? 1 : -1;
+            store.summPoints += store.point;
             state.push(step);
-            game.step = null;
+            store.step = null;
          }
       }
+
+      return { ...store };
    }
 
    return store;

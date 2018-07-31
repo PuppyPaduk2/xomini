@@ -1,22 +1,20 @@
+import game, { defaultStore } from '../game';
+import { gameAddUser } from '../game/actions';
+
 export default function(store = {}, action) {
    const { room, login } = action;
-   let game = store[room];
+   let storeGame = store[room];
 
-   if (!game) {
+   if (!storeGame) {
       return {
          ...store,
-         [room]: {
-            users: [login],
-            usersOut: [],
-            begin: false,
-            state: [],
-            step: null,
-            point: 0,
-            summPoints: 0
-         }
+         [room]: defaultStore([login])
       };
-   } else if (game && !game.begin && game.users.indexOf(login) === -1) {
-      game.users.push(login);
+   } else if (storeGame) {
+      return {
+         ...store,
+         [room]: game(storeGame, gameAddUser(login))
+      };
    }
 
    return store;
