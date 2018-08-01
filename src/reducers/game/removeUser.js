@@ -2,14 +2,18 @@ import { defaultStore } from './index';
 
 export default function(store = defaultStore(), action) {
    const { login } = action;
-   const { users, usersOut } = store;
-   const index = users.indexOf(login);
+   const { users } = store;
 
-   if (index !== -1) {
-      return {
-         ...store,
-         end: true
-      };
+   if (users[login]) {
+      if (store.begin) {
+         return {
+            ...store,
+            end: true
+         };
+      } else {
+         delete users[login];
+         return { ...store };
+      }
    }
 
    return store;

@@ -1,4 +1,4 @@
-import { gameTypes } from './actions';
+import { gameTypes, gameAddUser } from './actions';
 import addUser from './addUser';
 import removeUser from './removeUser';
 import addStep from './addStep';
@@ -10,13 +10,11 @@ export default function(store = defaultStore(), action) {
       return addUser(store, action);
    } else if (type === gameTypes.removeUser) {
       return removeUser(store, action);
-   } else if (type === gameTypes.begin) {
-      if (store.users.length > 1) {
-         return {
-            ...store,
-            begin: true
-         };
-      }
+   } else if (type === gameTypes.begin && Object.keys(store.users).length > 1) {
+      return {
+         ...store,
+         begin: true
+      };
    } else if (type === gameTypes.addStep) {
       return addStep(store, action);
    }
@@ -28,8 +26,8 @@ export default function(store = defaultStore(), action) {
  * @param {String[]} logins
  */
 export function defaultStore(logins = []) {
-   const result = {
-      users: [],
+   let result = {
+      users: {},
       begin: false,
       end: false,
       state: [],
@@ -38,8 +36,10 @@ export function defaultStore(logins = []) {
       summPoints: 0
    };
 
-   if (logins instanceof Array) {
-      result.users = result.users.concat(logins);
+   if (logins instanceof Array && logins.length) {
+      logins.forEach(login => {
+         result = addUser(result, gameAddUser(login));
+      });
    }
 
    return result;

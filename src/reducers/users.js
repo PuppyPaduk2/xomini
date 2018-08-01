@@ -44,7 +44,11 @@ export default function(store = {}, action) {
  * @param {String} params.login
  * @param {String} params.room
  */
-export function addUser(login = null, room = null) {
+export function addUser(login = generateLogin(), room = null) {
+   if (login === '') {
+      login = generateLogin();
+   }
+
    return {
       type: types.add,
       login,
@@ -57,4 +61,8 @@ export function removeUser(login) {
       type: types.remove,
       login
    };
+};
+
+function generateLogin() {
+   return 'Player ' + new Date().getTime();
 };

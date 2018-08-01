@@ -9,6 +9,7 @@ import { add as addUser } from '../reducers/users';
 import HtmlStyle from './components/Html/Html.less';
 import AppStyle from './components/App/App.less';
 import PlayerInStyle from './components/PlayerIn/PlayerIn.less';
+import GamespaceStyle from './components/Gamespace/Style.less';
 
 let initialData = document.getElementById('initial-data').getAttribute('data-json');
 initialData = typeof initialData === 'string' ? JSON.parse(initialData) : {};

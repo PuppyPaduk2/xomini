@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { setConfig } from '../../../reducers/userConfig/actions';
-
 import createSocket from '../../common/createSocket';
-import palette from './palette';
 
-import PlayerIn from '../PlayerIn/PlayerIn';
+import PlayerIn from '../PlayerIn';
+import Gamespace from '../Gamespace';
 
 export class App extends Component {
    state = {};
@@ -33,25 +32,28 @@ export class App extends Component {
       }, 0);
    };
 
-   onClickBegin = () => {
-      console.log('onClickBegin');
-   };
-
    playerInOnSend = (params) => {
       const { login, room } = params;
+
       this.socket.emit('inRoom', login, room);
       this.props.dispatch(setConfig({
          login,
          signIn: true
       }));
-
-      console.log(this);
    };
 
    render() {
+      const { userConfig } = this.props;
+
       let top;
-      let center = <PlayerIn onSend={this.playerInOnSend} />;
+      let center
       let bottom;
+
+      if (userConfig && userConfig.signIn) {
+         center = <Gamespace />;
+      } else {
+         center = <PlayerIn onSend={this.playerInOnSend} />;
+      }
 
       return (
          <div className="app">
