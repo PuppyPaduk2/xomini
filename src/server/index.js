@@ -7,6 +7,7 @@ import { createStore } from 'redux';
 import games from '../reducers/games';
 import gamesActions from '../reducers/games/actions';
 import gameActions from '../reducers/game/actions';
+import userConfigActions from '../reducers/userConfig/actions';
 
 const PORT = 3000;
 const app = express();
@@ -23,6 +24,25 @@ const store = createStore(games);
 
 serverIo.on('connection', socket => {
    socket.on('inRoom', (login, room) => {
+      if (!socket.userConfig) {
+         const addUserAction = gamesActions.addUser(room, login);
+
+         room = addUserAction.room;
+         login = addUserAction.login;
+
+         store.dispatch(addUserAction);
+
+         const state = store.getState();
+
+         socket.userConfig = state.users[login];
+
+         serverIo.emit('inRoom:result', gameActions.updateUsers(state.rooms[room].users));
+
+         socket.emit(
+            'userConfig',
+            userConfigActions.setConfig(socket.userConfig)
+         );
+      }
    });
 });
 

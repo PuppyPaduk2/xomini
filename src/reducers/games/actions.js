@@ -14,6 +14,16 @@ export const types = {
  * @param {String} login
  */
 export function addUser(room, login) {
+   const now = new Date().getTime();
+
+   if (room === undefined || room === '') {
+      room = 'Room@' + now;
+   }
+
+   if (login === undefined || login === '') {
+      login = 'Player@' + now;
+   }
+
    return {
       type: types.addUser,
       room,

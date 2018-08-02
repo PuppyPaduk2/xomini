@@ -1,6 +1,9 @@
 import defaultStore from './defaultStore';
-import game from '../game';
+import userConfigDefaultStore from '../userConfig/defaultStore';
+import userConfig from '../userConfig';
+import { setConfig } from '../userConfig/actions';
 import gameDefaultStore from '../game/defaultStore';
+import game from '../game';
 import { addUser } from '../game/actions';
 
 export default function(store = defaultStore, action) {
@@ -10,7 +13,9 @@ export default function(store = defaultStore, action) {
    let storeRoom = rooms[room];
 
    if (!user) {
-      users[login] = { room };
+      user = userConfigDefaultStore;
+
+      users[login] = userConfig(user, setConfig({ login, room }));
 
       if (!storeRoom) {
          storeRoom = gameDefaultStore();

@@ -1,4 +1,4 @@
-import { types, gameAddUser } from './actions';
+import { types } from './actions';
 import defaultStore from './defaultStore';
 import addUser from './addUser';
 import removeUser from './removeUser';

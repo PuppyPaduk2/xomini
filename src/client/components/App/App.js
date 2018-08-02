@@ -30,10 +30,6 @@ export class App extends Component {
       const { login, room } = params;
 
       this.socket.emit('inRoom', login, room);
-      this.props.dispatch(setConfig({
-         login,
-         signIn: true
-      }));
    };
 
    render() {
@@ -43,7 +39,7 @@ export class App extends Component {
       let center
       let bottom;
 
-      if (userConfig && userConfig.signIn) {
+      if (userConfig && userConfig.room) {
          center = <Gamespace socket={this.socket} />;
       } else {
          center = <PlayerIn onSend={this.playerInOnSend} />;

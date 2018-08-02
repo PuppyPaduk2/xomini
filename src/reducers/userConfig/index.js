@@ -1,30 +1,21 @@
 import { types } from './actions';
+import defaultStore from './defaultStore';
 
-export default function(store = defaultUserConfig(), action) {
+export default function(store = defaultStore, action) {
    const { type } = action;
 
    if (type === types.setConfig) {
-      let { login, signIn } = action;
+      let { login, room } = action;
 
       login = login === undefined ? store.login : login;
-      signIn = !!signIn;
+      room = room === undefined ? store.room : room;
 
       return {
          ...store,
          login,
-         signIn
+         room
       };
    }
 
    return store;
 };
-
-/**
- * @param {Object} config
- */
-function defaultUserConfig() {
-   return {
-      login: null,
-      signIn: false
-   };
-}
