@@ -1,14 +1,14 @@
 export default {
-   gameTypes,
-   gameAddUser,
-   gameRemoveUser,
-   gameBegin,
-   gameAddStep,
-   gameUserReady,
+   types,
+   addUser,
+   removeUser,
+   begin,
+   addStep,
+   userReady,
    updateUsers
 };
 
-export const gameTypes = {
+export const types = {
    addUser: 'GAME_ADD_USER',
    removeUser: 'GAME_REMOVE_USER',
    begin: 'GAME_BEGIN',
@@ -20,9 +20,9 @@ export const gameTypes = {
 /**
  * @param {String} login
  */
-export function gameAddUser(login) {
+export function addUser(login) {
    return {
-      type: gameTypes.addUser,
+      type: types.addUser,
       login
    };
 };
@@ -30,20 +30,16 @@ export function gameAddUser(login) {
 /**
  * @param {String} login
  */
-export function gameRemoveUser(login) {
+export function removeUser(login) {
    return {
-      type: gameTypes.removeUser,
+      type: types.removeUser,
       login
    };
 };
 
-/**
- * @param {String} room
- */
-export function gameBegin(room) {
+export function begin() {
    return {
-      type: gameTypes.begin,
-      room
+      type: types.begin
    };
 };
 
@@ -51,9 +47,9 @@ export function gameBegin(room) {
  * @param {String} login
  * @param {*} value
  */
-export function gameAddStep(login, value) {
+export function addStep(login, value) {
    return {
-      type: gameTypes.addStep,
+      type: types.addStep,
       login,
       value
    };
@@ -62,9 +58,9 @@ export function gameAddStep(login, value) {
 /**
  * @param {String} login
  */
-export function gameUserReady(login) {
+export function userReady(login) {
    return {
-      type: gameTypes.userReady,
+      type: types.userReady,
       login
    };
 };
@@ -74,7 +70,7 @@ export function gameUserReady(login) {
  */
 export function updateUsers(users = {}) {
    return {
-      type: gameTypes.updateUsers,
+      type: types.updateUsers,
       users
    };
 };

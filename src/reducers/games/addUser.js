@@ -1,20 +1,25 @@
-import game, { defaultStore } from '../game';
-import { gameAddUser } from '../game/actions';
+import defaultStore from './defaultStore';
+import game from '../game';
+import gameDefaultStore from '../game/defaultStore';
+import { addUser } from '../game/actions';
 
-export default function(store = {}, action) {
+export default function(store = defaultStore, action) {
    const { room, login } = action;
-   let storeGame = store[room];
+   const { rooms, users } = store;
+   let user = users[login];
+   let storeRoom = rooms[room];
 
-   if (!storeGame) {
-      return {
-         ...store,
-         [room]: defaultStore([login])
-      };
-   } else if (storeGame) {
-      return {
-         ...store,
-         [room]: game(storeGame, gameAddUser(login))
-      };
+   if (!user) {
+      users[login] = { room };
+
+      if (!storeRoom) {
+         storeRoom = gameDefaultStore();
+         rooms[room] = storeRoom;
+      }
+   
+      game(storeRoom, addUser(login));
+
+      return { ...store };
    }
 
    return store;

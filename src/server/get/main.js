@@ -9,11 +9,10 @@ import App from '../../client/components/App/App';
 
 export default function(req, res) {
    const initialData = {};
-   const store = createStore(gameReducers);
 
    const htmlParams = {
       content: (
-         <Provider store={store}>
+         <Provider store={createStore(gameReducers)}>
             <App />
          </Provider>
       ),

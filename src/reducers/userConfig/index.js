@@ -7,10 +7,7 @@ export default function(store = defaultUserConfig(), action) {
       let { login, signIn } = action;
 
       login = login === undefined ? store.login : login;
-
-      if (store.signIn !== true) {
-         signIn = !!signIn;
-      }
+      signIn = !!signIn;
 
       return {
          ...store,

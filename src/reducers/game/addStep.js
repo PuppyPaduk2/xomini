@@ -1,4 +1,4 @@
-import { defaultStore } from './index';
+import defaultStore from './defaultStore';
 
 export default function(store = defaultStore(), action) {
    let { step, state, users } = store;
