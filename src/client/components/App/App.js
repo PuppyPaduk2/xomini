@@ -7,19 +7,13 @@ import PlayerIn from '../PlayerIn';
 import Gamespace from '../Gamespace';
 
 export class App extends Component {
-   state = {};
-
    componentDidMount() {
       const socket = createSocket();
       const dispatch = this.props.dispatch;
 
       this.socket = socket;
 
-      socket.on('fetch:result', action => {
-         dispatch(action);
-      });
-
-      socket.on('userJoinInRom', action => {
+      socket.on('inRoom:result', action => {
          dispatch(action);
       });
 
@@ -27,9 +21,9 @@ export class App extends Component {
          dispatch(action);
       });
 
-      setTimeout(() => {
-         socket.emit('fetch');
-      }, 0);
+      socket.on('userConfig', action => {
+         dispatch(action);
+      });
    };
 
    playerInOnSend = (params) => {
@@ -50,7 +44,7 @@ export class App extends Component {
       let bottom;
 
       if (userConfig && userConfig.signIn) {
-         center = <Gamespace />;
+         center = <Gamespace socket={this.socket} />;
       } else {
          center = <PlayerIn onSend={this.playerInOnSend} />;
       }

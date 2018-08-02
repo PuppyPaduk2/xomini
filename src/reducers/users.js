@@ -30,10 +30,8 @@ export default function(store = {}, action) {
       }
    } else if (type === gameTypes.addStep && login && store[login]) {
       action.room = store[login].room;
-   } else if (type === typesAll.fetch && action.users) {
-      return {
-         ...action.users
-      };
+   } else if (type === gameTypes.userReady && login && store[login] ) {
+      action.room = store[login].room;
    }
 
    return store;

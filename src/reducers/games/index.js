@@ -1,10 +1,9 @@
 import { types as usersTypes } from '../users';
-import { gameTypes } from '../game/actions';
+import { gameTypes, gameBegin } from '../game/actions';
 import game from '../game';
-import { gameBegin } from '../game/actions';
 import addUser from './addUser';
 import removeUser from './removeUser';
-import gameAddStep from './gameAddStep';
+import changeGame from './changeGame';
 
 const defaultStore = {};
 
@@ -16,12 +15,11 @@ export default function(store = defaultStore, action) {
    } else if (type === usersTypes.remove && action.isExist) {
       return removeUser(store, action);
    } else if (type === gameTypes.begin && store[room]) {
-      return {
-         ...store,
-         [room]: game(store[room], gameBegin(room))
-      };
+      return changeGame('gameBegin', store, action);
    } else if (type === gameTypes.addStep) {
-      return gameAddStep(store, action);
+      return changeGame('gameAddStep', store, action);
+   } else if (type === gameTypes.userReady) {
+      return changeGame('gameUserReady', store, action);
    }
 
    return store;

@@ -6,7 +6,8 @@ import main from './get/main';
 import { createStore } from 'redux';
 import reducers from '../reducers';
 import { addUser, removeUser } from '../reducers/users';
-import { gameAddUser, gameRemoveUser, gameBegin, gameAddStep } from '../reducers/game/actions';
+import gameActions, { gameAddUser, gameRemoveUser, gameBegin, gameAddStep } from '../reducers/game/actions';
+import { setConfig } from '../reducers/userConfig/actions';
 
 const PORT = 3000;
 const app = express();
@@ -25,8 +26,6 @@ app.use((req, res, next) => {
 app.get('/', main);
 
 serverIo.on('connection', socket => {
-   console.log('@connection');
-
    socket.on('inRoom', (login, room) => {
       const actionAddUser = addUser(login, room);
 
@@ -34,8 +33,30 @@ serverIo.on('connection', socket => {
 
       if (!store.getState().users[login]) {
          socket.login = login;
+
          store.dispatch(actionAddUser);
-         serverIo.emit('userJoinInRom', gameAddUser(login));
+
+         serverIo.emit(
+            'inRoom:result',
+            gameActions.updateUsers(store.getState().games[room].users)
+         );
+
+         socket.emit('userConfig', setConfig({
+            login,
+            signIn: true
+         }));
+      }
+   });
+
+   socket.on('user:ready', () => {
+      const { login } = socket;
+
+      if (login) {
+         const action = gameActions.gameUserReady(login);
+
+         store.dispatch(action);
+
+         serverIo.emit('user:ready:result', action);
       }
    });
 
@@ -44,6 +65,7 @@ serverIo.on('connection', socket => {
 
       if (store.getState().users[login]) {
          store.dispatch(removeUser(login));
+
          serverIo.emit('socket:disconnect', gameRemoveUser(login));
       }
    });

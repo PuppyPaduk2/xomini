@@ -1,71 +1,84 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import palette from './palette';
+import colors from './colors';
+import templates from './templates';
 
 import Button from '@material-ui/core/Button';
 
 export class Gamespace extends Component {
    state = {
-      disabledButtonStart: true
+      ping: 0
    };
 
    componentDidMount() {
-      this._disabledButtonStartFalse(this.props, this.state);
-   };
-
-   componentDidUpdate(...args) {
-      this._disabledButtonStartFalse(...args);
-   };
-
-   onStart = () => {
-      this.setState({
-         disabledButtonStart: true
+      this.socketOn({
+         'user:ready:result': this._userReadyResult.bind(this)
       });
    };
 
-   _disabledButtonStartFalse(props, state) {
-      const { users } = props.game;
+   onStart = () => {
+      this.socketEmit('user:ready');
+   };
 
-      if (Object.keys(users).length > 1 && state.disabledButtonStart === true) {
+   socketOn = (handlers = {}) => {
+      const { socket } = this.props;
+
+      if (socket && socket.emit) {
+         Object.keys(handlers).forEach(nameEvent => {
+            let eventHandlers = handlers[nameEvent];
+
+            if (eventHandlers instanceof Function) {
+               eventHandlers = [eventHandlers];
+            }
+
+            if (eventHandlers instanceof Array) {
+               eventHandlers.forEach(handler => {
+                  if (handler instanceof Function) {
+                     socket.on(nameEvent, handler);
+                  }
+               });
+            }
+         });
+      }
+   };
+
+   socketEmit = (nameEvent, ...args) => {
+      const { socket } = this.props;
+
+      if (socket && socket.emit) {
+         socket.emit(nameEvent, ...args);
+      }
+   };
+
+   _userReadyResult(action) {
+      const { dispatch, userConfig } = this.props;
+
+      dispatch(action);
+
+      if (userConfig.login !== action.login) {
          this.setState({
-            disabledButtonStart: false
+            ping: this.state.ping + 1
          });
       }
    };
 
    render() {
-      const { users } = this.props.game;
-      const { disabledButtonStart } = this.state;
-      let usersContent;
-      const paletteColors = palette.map((color, index) => {
-         const style = {
-            backgroundColor: color,
-            width: '2rem',
-            maxWidth: '2rem',
-            minWidth: '2rem',
-         };
-
-         return (
-            <Button key={index} size="small" variant="contained" style={style}>&nbsp;</Button>
-         );
-      });
-
-      if (users) {
-         usersContent = Object.keys(users).map((login, index) => {
-            return (
-               <div className="user" key={index}>{login}</div>
-            );
-         });
-      }
+      const { ping } = this.state;
+      const { users, begin } = this.props.game;
+      const usersCount = Object.keys(users).length;
+      let disabledButtonStart = (!begin && usersCount > 1) ? false : true;
+      let userReady = ping > 1
+         ? (<div className="user-ready" key={ping}><div className="ping"></div></div>)
+         : null;
 
       return (
          <div className="gamespace">
-            <div className="users">{usersContent}</div>
+            {templates.users(users)}
 
             <div className="state"></div>
 
             <div className="buttons">
-               <div className="palette">{paletteColors}</div>
+               {templates.palette(colors)}
 
                <Button
                   size="small"
@@ -77,6 +90,8 @@ export class Gamespace extends Component {
                >
                   Start
                </Button>
+
+               {userReady}
             </div>
          </div>
       );
@@ -84,5 +99,5 @@ export class Gamespace extends Component {
 };
 
 export default connect(store => {
-   return { game: store.game };
+   return store;
 })(Gamespace);

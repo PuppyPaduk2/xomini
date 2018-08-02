@@ -2,6 +2,7 @@ import { gameTypes, gameAddUser } from './actions';
 import addUser from './addUser';
 import removeUser from './removeUser';
 import addStep from './addStep';
+import userReady from './userReady';
 
 export default function(store = defaultStore(), action) {
    const { type } = action;
@@ -17,6 +18,13 @@ export default function(store = defaultStore(), action) {
       };
    } else if (type === gameTypes.addStep) {
       return addStep(store, action);
+   } else if (type === gameTypes.userReady) {
+      return userReady(store, action);
+   } else if (type === gameTypes.updateUsers) {
+      return {
+         ...store,
+         users: action.users
+      };
    }
 
    return store;
