@@ -2,7 +2,6 @@ export default {
    types,
    addUser,
    removeUser,
-   begin,
    addStep,
    userReady,
    updateUsers
@@ -11,7 +10,6 @@ export default {
 export const types = {
    addUser: 'GAME_ADD_USER',
    removeUser: 'GAME_REMOVE_USER',
-   begin: 'GAME_BEGIN',
    addStep: 'GAME_ADD_STEP',
    userReady: 'GAME_USER_READY',
    updateUsers: 'GAME_UPDATE_USERS'
@@ -34,12 +32,6 @@ export function removeUser(login) {
    return {
       type: types.removeUser,
       login
-   };
-};
-
-export function begin() {
-   return {
-      type: types.begin
    };
 };
 

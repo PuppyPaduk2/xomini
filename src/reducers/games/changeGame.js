@@ -1,3 +1,4 @@
+import defaultStore from './defaultStore';
 import game from '../game';
 import gameActions from '../game/actions';
 
@@ -6,18 +7,21 @@ import gameActions from '../game/actions';
  * @param {Object} store
  * @param {Object} action
  */
-export default function(nameAction, store = {}, action) {
-   const { room } = action;
-   let storeGame = room && store[room];
-   const gameAction = gameActions[nameAction];
+export default function(nameAction, store = defaultStore, action) {
+   const { login } = action;
+   const { rooms, users } = store;
+   const user = users[login];
 
-   if (storeGame && gameAction) {
-      storeGame = game(storeGame, gameAction(action.login, action.value));
+   if (user) {
+      const room = user.room;
+      let storeRoom = rooms[room];
+      const gameAction = gameActions[nameAction];
 
-      return {
-         ...store,
-         [room]: storeGame
-      };
+      if (storeRoom) {
+         rooms[room] = game(storeRoom, gameAction(login, action.value));
+
+         return { ...store };
+      }
    }
 
    return store;

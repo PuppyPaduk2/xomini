@@ -12,13 +12,11 @@ export default function(store = defaultStore(), action) {
       return addUser(store, action);
    } else if (type === types.removeUser) {
       return removeUser(store, action);
-   } else if (type === types.begin && Object.keys(store.users).length > 1) {
-      return { ...store, begin: true };
-   } else if (type === types.addStep) {
-      return addStep(store, action);
    } else if (type === types.userReady) {
       return userReady(store, action);
-   } else if (type === types.updateUsers) {
+   }  else if (type === types.addStep) {
+      return addStep(store, action);
+   }else if (type === types.updateUsers) {
       return { ...store, users: action.users };
    }
 

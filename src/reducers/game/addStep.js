@@ -4,7 +4,7 @@ export default function(store = defaultStore(), action) {
    let { step, state, users } = store;
    let { login, value } = action;
 
-   if (store.begin && login && value !== undefined && users.indexOf(login) !== -1) {
+   if (store.begin && login && value !== undefined && users[login]) {
       if (!step) {
          step = {};
          store.step = step;
@@ -15,7 +15,7 @@ export default function(store = defaultStore(), action) {
 
          const keysStep = Object.keys(step);
 
-         if (keysStep.length === users.length) {
+         if (keysStep.length === Object.keys(users).length) {
             store.point = isUnic(keysStep.map(key => step[key])) ? 1 : -1;
             store.summPoints += store.point;
             state.push(step);

@@ -21,11 +21,6 @@ app.get('/', main);
 
 const store = createStore(games);
 
-store.dispatch(gamesActions.addUser('@room1', '@user1'));
-store.dispatch(gamesActions.removeUser('@room1'));
-
-console.log(store.getState());
-
 serverIo.on('connection', socket => {
    socket.on('inRoom', (login, room) => {
    });

@@ -14,10 +14,9 @@ export default function(store = defaultStore, action) {
 
       if (!storeRoom) {
          storeRoom = gameDefaultStore();
-         rooms[room] = storeRoom;
       }
-   
-      game(storeRoom, addUser(login));
+
+      rooms[room] = game(storeRoom, addUser(login));
 
       return { ...store };
    }
