@@ -1,5 +1,6 @@
 @color-width: 2rem;
 @color-border-radius: 4px;
+@color-grid-gap: .5rem;
 
 .gamespace {
    width: 100%;
@@ -11,6 +12,25 @@
       display: grid;
       justify-content: center;
       align-content: center;
+   }
+
+   .color {
+      border-radius: @color-border-radius;
+      width: @color-width;
+      max-width: @color-width;
+      min-width: @color-width;
+   }
+
+   .state {
+      .content {
+         display: grid;
+         justify-content: center;
+         align-content: center;
+
+         grid-auto-columns: @color-width;
+         grid-auto-rows: @color-width;
+         grid-gap: @color-grid-gap;
+      }
    }
 
    .users {
@@ -37,15 +57,8 @@
       margin-bottom: 1.5rem;
       grid-auto-columns: @color-width;
       grid-auto-rows: @color-width;
+      grid-gap: @color-grid-gap;
       grid-template-columns: repeat(3, @color-width);
-      grid-gap: .5rem;
-
-      .color {
-         border-radius: @color-border-radius;
-         width: @color-width;
-         max-width: @color-width;
-         min-width: @color-width;
-      }
    }
 
    .buttons {

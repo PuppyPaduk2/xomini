@@ -1,11 +1,14 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+
 /**
  * @param {Object[]} palette
+ * @param {Function} onClick
+ * @param {Boolean} [disabled]
  */
-export default function(palette = []) {
+export default function(palette = [], onClick, disabled = true) {
    palette = palette.map((color, index) => {
-      const style = { backgroundColor: color };
+      const style = disabled ? {} : { backgroundColor: color };
 
       return (
          <Button
@@ -14,6 +17,8 @@ export default function(palette = []) {
             variant="contained"
             style={style}
             className="color"
+            onClick={onClick(color)}
+            disabled={disabled}
          >
             &nbsp;
          </Button>

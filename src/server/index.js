@@ -39,6 +39,10 @@ serverIo.on('connection', socket => {
       serverIo.to(room).emit('userReady:fromClient', action, room);
    });
 
+   socket.on('addStep:toClient', (action, room) => {
+      socket.to(room).emit('addStep:fromClient', action, room);
+   });
+
    socket.on('disconnecting', () => {
       const login = socket.login;
 

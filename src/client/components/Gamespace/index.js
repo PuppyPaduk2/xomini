@@ -13,12 +13,15 @@ export class Gamespace extends ComponentSocket {
    };
 
    componentDidMount(...args) {
+      const { dispatch } = this.props;
+
       if (this.props.socket) {
          this.socket = this.props.socket;
       }
 
       this.socketOn({
-         'userReady:fromClient': this._userReadyResult.bind(this)
+         'userReady:fromClient': this._userReadyResult.bind(this),
+         'addStep:fromClient': action => dispatch(action)
       });
    };
 
@@ -30,6 +33,14 @@ export class Gamespace extends ComponentSocket {
          gameAction.userReady(userConfig.login),
          userConfig.room
       );
+   };
+
+   _onClickColor = color => () => {
+      const { dispatch, userConfig } = this.props;
+      const addStepAction = gameAction.addStep(userConfig.login, color);
+
+      dispatch(addStepAction);
+      this.socketEmit('addStep:toClient', addStepAction, userConfig.room);
    };
 
    _userReadyResult(action) {
@@ -46,7 +57,8 @@ export class Gamespace extends ComponentSocket {
 
    render() {
       const { ping } = this.state;
-      const { users, begin } = this.props.game;
+      const { game } = this.props;
+      const { users, begin } = game;
       const usersCount = Object.keys(users).length;
       let disabledButtonStart = (!begin && usersCount > 1) ? false : true;
       let userReady = ping > 1
@@ -57,10 +69,10 @@ export class Gamespace extends ComponentSocket {
          <div className="gamespace">
             {templates.users(users)}
 
-            <div className="state"></div>
+            {templates.state(game)}
 
             <div className="buttons">
-               {templates.palette(colors)}
+               {templates.palette(colors, this._onClickColor, !begin)}
 
                <Button
                   size="small"
