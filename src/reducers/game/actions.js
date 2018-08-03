@@ -4,7 +4,8 @@ export default {
    removeUser,
    addStep,
    userReady,
-   updateUsers
+   updateUsers,
+   mergeUsers
 };
 
 export const types = {
@@ -12,7 +13,8 @@ export const types = {
    removeUser: 'GAME_REMOVE_USER',
    addStep: 'GAME_ADD_STEP',
    userReady: 'GAME_USER_READY',
-   updateUsers: 'GAME_UPDATE_USERS'
+   updateUsers: 'GAME_UPDATE_USERS',
+   mergeUsers: 'GAME_MERGE_USERS'
 };
 
 /**
@@ -63,6 +65,16 @@ export function userReady(login) {
 export function updateUsers(users = {}) {
    return {
       type: types.updateUsers,
+      users
+   };
+};
+
+/**
+ * @param {Object} users
+ */
+export function mergeUsers(users = {}) {
+   return {
+      type: types.mergeUsers,
       users
    };
 };

@@ -1,18 +1,41 @@
 export default {
    types,
-   setConfig
+   setLogin,
+   setRoom
 }
 
 export const types = {
-   setConfig: 'USER_CONFIG'
+   setLogin: 'USER_CONFIG_SET_LOGIN',
+   setRoom: 'USER_CONFIG_SET_ROOM'
 };
 
 /**
- * @param {Object} config
+ * @param {strin} login
  */
-export function setConfig(config) {
+export function setLogin(login) {
    return {
-      type: types.setConfig,
-      ...config
+      type: types.setLogin,
+      login: checkNull(login, 'Player')
    };
+};
+
+/**
+ * @param {@String} room
+ */
+export function setRoom(room) {
+   return {
+      type: types.setRoom,
+      room: checkNull(room, 'Room')
+   };
+};
+
+/**
+ * @param {String} value
+ * @param {String} [namespace]
+ * @param {String} [separator]
+ */
+function checkNull(value, namespace = '', separator = '@') {
+   return (value === null || value === undefined || value === '')
+      ? [namespace, new Date().getTime()].join(separator)
+      : value;
 };

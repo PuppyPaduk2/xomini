@@ -1,53 +1,35 @@
-import React, { Component } from 'react';
+import React from 'react';
+import ComponentSocket from '../ComponentSocket';
 import { connect } from 'react-redux';
 import colors from './colors';
 import templates from './templates';
+import gameAction from '../../../reducers/game/actions';
 
 import Button from '@material-ui/core/Button';
 
-export class Gamespace extends Component {
+export class Gamespace extends ComponentSocket {
    state = {
       ping: 0
    };
 
-   componentDidMount() {
+   componentDidMount(...args) {
+      if (this.props.socket) {
+         this.socket = this.props.socket;
+      }
+
       this.socketOn({
-         'user:ready:result': this._userReadyResult.bind(this)
+         'userReady:fromClient': this._userReadyResult.bind(this)
       });
    };
 
    onStart = () => {
-      this.socketEmit('user:ready');
-   };
+      const userConfig = this.props.userConfig;
 
-   socketOn = (handlers = {}) => {
-      const { socket } = this.props;
-
-      if (socket && socket.emit) {
-         Object.keys(handlers).forEach(nameEvent => {
-            let eventHandlers = handlers[nameEvent];
-
-            if (eventHandlers instanceof Function) {
-               eventHandlers = [eventHandlers];
-            }
-
-            if (eventHandlers instanceof Array) {
-               eventHandlers.forEach(handler => {
-                  if (handler instanceof Function) {
-                     socket.on(nameEvent, handler);
-                  }
-               });
-            }
-         });
-      }
-   };
-
-   socketEmit = (nameEvent, ...args) => {
-      const { socket } = this.props;
-
-      if (socket && socket.emit) {
-         socket.emit(nameEvent, ...args);
-      }
+      this.socketEmit(
+         'userReady:toClient',
+         gameAction.userReady(userConfig.login),
+         userConfig.room
+      );
    };
 
    _userReadyResult(action) {
@@ -98,6 +80,4 @@ export class Gamespace extends Component {
    };
 };
 
-export default connect(store => {
-   return store;
-})(Gamespace);
+export default connect(store => store)(Gamespace);

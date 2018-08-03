@@ -16,8 +16,19 @@ export default function(store = defaultStore(), action) {
       return userReady(store, action);
    }  else if (type === types.addStep) {
       return addStep(store, action);
-   }else if (type === types.updateUsers) {
+   } else if (type === types.updateUsers) {
       return { ...store, users: action.users };
+   } else if (type === types.mergeUsers) {
+      const storeUsers = store.users;
+      const actionUsers = action.users;
+
+      return {
+         ...store,
+         users: {
+            ...storeUsers,
+            ...actionUsers
+         }
+      }
    }
 
    return store;
