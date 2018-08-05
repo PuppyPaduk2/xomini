@@ -5,7 +5,9 @@ import colors from './colors';
 import templates from './templates';
 import gameAction from '../../../reducers/game/actions';
 
-import Button from '@material-ui/core/Button';
+import { BottomNavigation, BottomNavigationAction, Button } from '@material-ui/core';
+import People from '@material-ui/icons/People';
+import ExitToApp from '@material-ui/icons/ExitToApp';
 
 export class Gamespace extends ComponentSocket {
    state = {
@@ -67,8 +69,6 @@ export class Gamespace extends ComponentSocket {
 
       return (
          <div className="gamespace">
-            {templates.users(users)}
-
             {templates.state(game)}
 
             <div className="buttons">
@@ -87,6 +87,13 @@ export class Gamespace extends ComponentSocket {
 
                {userReady}
             </div>
+
+            <BottomNavigation
+               showLabels
+            >
+               <BottomNavigationAction label="People" icon={<People />} />
+               <BottomNavigationAction label="ExitToApp" icon={<ExitToApp />} />
+            </BottomNavigation>
          </div>
       );
    };
