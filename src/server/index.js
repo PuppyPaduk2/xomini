@@ -1,31 +1,64 @@
 import path from 'path';
 import express from 'express';
-import React from 'react';
-import ReactDom from 'react-dom/server';
-import setupHttp from './setupHttp';
-
-import Html from '../client/components/Html/Html';
-import App from '../client/components/App/App';
+import http from 'http';
+import io from 'socket.io';
+import main from './get/main';
+import gameActions from '../reducers/game/actions';
 
 const PORT = 3000;
-
 const app = express();
-const { server } = setupHttp(app);
+const server = http.Server(app);
+const serverIo = new io(server, {
+   serveClient: false,
+   wsEngine: 'ws'
+});
 
 app.use(express.static(path.join('client')));
+app.get('/', main);
 
-app.get('/', function(req, res) {
-   const initialData = {
-      players: []
-   };
-   const htmlParams = {
-      content: <App {...initialData} />,
-      initialData: initialData
-   };
+serverIo.on('connection', socket => {
+   socket.on('addUser:toClient', (action, room) => {
+      const login = action.login;
 
-   const result = ReactDom.renderToString(<Html {...htmlParams} />);
+      if (!socket.login) {
+         socket.login = login;
 
-   return res.send(result);
+         socket.join(room);
+
+         serverIo
+            .to(room)
+            .emit('addUser:fromClient', action, room);
+      }
+   });
+
+   socket.on('mergeUsers:toClient', (action, room) => {
+      serverIo.to(room).emit('mergeUsers:fromClient', action, room);
+   });
+
+   socket.on('userReady:toClient', (action, room) => {
+      serverIo.to(room).emit('userReady:fromClient', action, room);
+   });
+
+   socket.on('addStep:toClient', (action, room) => {
+      socket.to(room).emit('addStep:fromClient', action, room);
+   });
+
+   socket.on('disconnecting', () => {
+      const login = socket.login;
+
+      if (login) {
+         const socketId = socket.id;
+
+         Object.keys(socket.rooms).reduce((result, room) => {
+            if (room !== socketId) {
+               return result.to(room);
+            } else {
+               return result;
+            }
+         }, serverIo)
+            .emit('removeUser:fromServer', gameActions.removeUser(login));
+      }
+   });
 });
 
 server.listen(PORT, function() {

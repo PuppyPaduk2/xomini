@@ -1,94 +1,65 @@
-import React, { Component } from 'react';
-import Players from '../Players/Players';
+import React from 'react';
+import ComponentSocket from '../ComponentSocket';
+import { connect } from 'react-redux';
 import createSocket from '../../common/createSocket';
-import colors from './colors';
-import { game } from '../../game';
-import _ from 'lodash';
+import userConfigActions from '../../../reducers/userConfig/actions';
+import gameActions from '../../../reducers/game/actions';
 
-import PlayerIn from '../PlayerIn/PlayerIn';
-import GameSpace from '../GameSpace/GameSpace';
-import Button from '@material-ui/core/Button';
+import PlayerIn from '../PlayerIn';
+import Gamespace from '../Gamespace';
 
-const path = '/players';
-
-export default class App extends Component {
-   state = _.merge({
-      palette: colors,
-      isSignIn: false,
-   }, game.defaultState());
-
+export class App extends ComponentSocket {
    componentDidMount() {
-      this.sockets = { players: createSocket(path) };
+      const socket = createSocket();
+      const { dispatch, game, userConfig } = this.props;
+
+      this.socket = socket;
+
+      this.socketOn({
+         'addUser:fromClient': (action, room) => {
+            dispatch(action);
+
+            socket.emit(
+               'mergeUsers:toClient',
+               gameActions.mergeUsers(game.users),
+               room
+            );
+         },
+         'mergeUsers:fromClient': action => dispatch(action),
+         'removeUser:fromServer': action => dispatch(action)
+      });
    };
 
-   initConnection = params => {
-      params.isSignIn = true;
-      this.setState(params);
+   inRoom = (params) => {
+      const { dispatch } = this.props;
+      const setLoginAction = userConfigActions.setLogin(params.login);
+      const setRoomAction = userConfigActions.setRoom(params.room);
 
-      console.log(this.state);
-   };
+      dispatch(setLoginAction);
+      dispatch(setRoomAction);
 
-   initConnectionError = message => {
-      if (!this.state.begin) {
-         this.sockets.room.disconnect();
-         delete this.sockets.room;
-      }
-   };
+      const addUserAction = gameActions.addUser(setLoginAction.login);
 
-   signIn = (params) => {
-      const sockets = this.sockets;
-      let room;
+      dispatch(addUserAction);
 
-      params.room = [path, _.camelCase(params.room)].join('-');
-
-      sockets.players.emit('signIn', params);
-
-      if (!sockets.room) {
-         room = createSocket(params.room, {
-            query: { name: params.name }
-         });
-
-         room.on('initConnection', this.initConnection);
-         room.on('initConnectionError', this.initConnectionError);
-         room.on('initDisconnect', this.setState.bind(this));
-         room.on('begin', this.setState.bind(this));
-
-         sockets.room = room;
-      }
-   };
-
-   onClickBegin = () => {
-      if (!this.state.begin) {
-         this.sockets.room.emit('begin');
-      }
+      this.socketEmit(
+         'addUser:toClient',
+         addUserAction,
+         setRoomAction.room
+      );
    };
 
    render() {
-      const state = this.state;
+      const { userConfig } = this.props;
+
       let top;
-      let center = <PlayerIn onSend={this.signIn} />;
+      let center
       let bottom;
 
-      if (state.isSignIn) {
-         top = <Players players={state.players} />;
-
-         center = (
-            <GameSpace
-               map={state.map}
-               players={state.players}
-               palette={state.palette}
-            />
-         );
-
-         bottom = (
-            <Button
-               className="button-send"
-               color="primary"
-               onClick={this.onClickBegin}
-            >
-               Start
-            </Button>
-         );
+      if (userConfig && userConfig.room) {
+         center = <Gamespace socket={this.socket} />;
+      } else {
+         center = <PlayerIn onSend={this.inRoom} />;
       }
 
       return (
@@ -99,5 +70,10 @@ export default class App extends Component {
          </div>
       );
    };
+};
 
-}
+function test(store) {
+   return store;
+};
+
+export default connect(test)(App);

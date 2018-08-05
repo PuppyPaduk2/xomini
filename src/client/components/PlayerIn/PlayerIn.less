@@ -5,6 +5,12 @@
    align-items: center;
    justify-content: center;
    flex-direction: column;
+   opacity: 0;
+
+   &.show-anim {
+      opacity: 1;
+      animation: 1s show-animation;
+   }
 
    .button-send {
       width: 182px;
@@ -15,4 +21,14 @@
          background-color: #F44336;
       }
    }
+
+   @keyframes show-animation {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+   }
 }
+
