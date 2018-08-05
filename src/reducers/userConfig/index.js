@@ -14,7 +14,13 @@ export default function(store = defaultStore, action) {
          ...store,
          room: action.room
       };
+   } else if (type === types.reset) {
+      return {
+         ...defaultStore
+      };
    }
 
    return store;
 };
+
+export * as actions from './actions';

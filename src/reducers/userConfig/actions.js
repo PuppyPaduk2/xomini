@@ -1,12 +1,7 @@
-export default {
-   types,
-   setLogin,
-   setRoom
-}
-
 export const types = {
    setLogin: 'USER_CONFIG_SET_LOGIN',
-   setRoom: 'USER_CONFIG_SET_ROOM'
+   setRoom: 'USER_CONFIG_SET_ROOM',
+   reset: 'USER_CONFIG_RESET'
 };
 
 /**
@@ -26,6 +21,12 @@ export function setRoom(room) {
    return {
       type: types.setRoom,
       room: checkNull(room, 'Room')
+   };
+};
+
+export function reset() {
+   return {
+      type: types.reset
    };
 };
 
