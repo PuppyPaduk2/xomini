@@ -35,7 +35,7 @@ export function reset() {
  * @param {String} [namespace]
  * @param {String} [separator]
  */
-function checkNull(value, namespace = '', separator = '@') {
+function checkNull(value, namespace = '', separator = '#') {
    return (value === null || value === undefined || value === '')
       ? [namespace, new Date().getTime()].join(separator)
       : value;

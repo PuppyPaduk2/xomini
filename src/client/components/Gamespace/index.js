@@ -1,45 +1,50 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import ComponentSocket from '../ComponentSocket';
-import { BottomNavigation, BottomNavigationAction, AppBar, Typography, Toolbar } from '@material-ui/core';
-import People from '@material-ui/icons/People';
-import ExitToApp from '@material-ui/icons/ExitToApp';
+import tAppBar from './templates/appBar.jsx';
+import tBottomNav from './templates/bottomNav.jsx';
+
+import { actions as gameActions } from '../../../reducers/userConfig';
 
 export class Gamespace extends ComponentSocket {
-   handleChange = (event, value) => {
-      const { onExit } = this.props;
+   state = {
+      openPlayersList: false
+   };
 
-      if (value === 'exit' && onExit instanceof Function) {
-         onExit();
+   handleChange = (event, value) => {
+      if (value === 'exit') {
+         this.props.dispatch(gameActions.reset());
       } else if (value === 'players') {
-         console.log('@players');
+         this.setState({ openPlayersList: true });
       }
    };
 
+   closePlayersList = () => {
+      this.setState({ openPlayersList: false });
+   };
+
    render() {
+      const { userConfig } = this.props;
+
       return (
          <div className="gamespace">
             <div className="top">
-               <AppBar position="static" color="default">
-                  <Toolbar>
-                        Photos
-                     <Typography variant="title" color="inherit">
-                     </Typography>
-                  </Toolbar>
-               </AppBar>
+               {tAppBar(userConfig)}
             </div>
 
             <div className="content"></div>
 
             <div className="bottom">
-               <BottomNavigation
-                  onChange={this.handleChange}
-                  showLabels
-               >
-                  <BottomNavigationAction label="Players" value="players" icon={<People />} />
-                  <BottomNavigationAction label="ExitToApp" value="exit" icon={<ExitToApp />} />
-               </BottomNavigation>
+               {
+                  tBottomNav(this.state, {
+                     bottomNavigation: this.handleChange,
+                     closePlayersList: this.closePlayersList
+                  })
+               }
             </div>
          </div>
       );
    };
 };
+
+export default connect(store => store)(Gamespace);

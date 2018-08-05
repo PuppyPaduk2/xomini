@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Input, Button } from '@material-ui/core';
+
+import { actions as gameActions } from '../../../../reducers/userConfig';
 
 export class Signin extends Component {
    values = {
@@ -20,11 +23,12 @@ export class Signin extends Component {
    };
 
    signin = () => {
+      const { dispatch } = this.props;
       let { nameRoom, login } = this.values;
-      const { onSignIn } = this.props;
 
-      if (nameRoom !== '' && onSignIn instanceof Function) {
-         onSignIn(nameRoom, login);
+      if (nameRoom !== '') {
+         dispatch(gameActions.setRoom(nameRoom));
+         dispatch(gameActions.setLogin(login));
       } else {
          this.setState({ errorNameRoom: true });
       }
@@ -61,3 +65,5 @@ export class Signin extends Component {
       );
    };
 };
+
+export default connect()(Signin);
