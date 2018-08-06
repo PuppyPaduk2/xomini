@@ -15,12 +15,12 @@ export function setLogin(login) {
 };
 
 /**
- * @param {@String} room
+ * @param {@String} nameRoom
  */
-export function setRoom(room) {
+export function setRoom(nameRoom) {
    return {
       type: types.setRoom,
-      room: checkNull(room, 'Room')
+      nameRoom: checkNull(nameRoom, 'Room')
    };
 };
 

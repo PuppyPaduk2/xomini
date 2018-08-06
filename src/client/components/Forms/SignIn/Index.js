@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Input, Button } from '@material-ui/core';
 
-import { actions as gameActions } from '../../../../reducers/userConfig';
+import { actions as userConfigActions } from 'reducers/userConfig';
+import { actions as usersActions } from 'reducers/users';
 
 export class Signin extends Component {
    values = {
@@ -27,8 +28,14 @@ export class Signin extends Component {
       let { nameRoom, login } = this.values;
 
       if (nameRoom !== '') {
-         dispatch(gameActions.setRoom(nameRoom));
-         dispatch(gameActions.setLogin(login));
+         const setLoginAction = userConfigActions.setLogin(login);
+
+         dispatch(userConfigActions.setRoom(nameRoom));
+         dispatch(setLoginAction);
+
+         console.log(setLoginAction)
+
+         dispatch(usersActions.add(setLoginAction.login));
       } else {
          this.setState({ errorNameRoom: true });
       }

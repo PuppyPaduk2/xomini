@@ -12,6 +12,7 @@ import {
 import People from '@material-ui/icons/People';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Close from '@material-ui/icons/Close';
+import Chat from '@material-ui/icons/Chat';
 
 export default function(state = {}, handlers = {}) {
    const people = <Badge badgeContent={0} color="primary">
@@ -25,6 +26,7 @@ export default function(state = {}, handlers = {}) {
             showLabels
          >
             <BottomNavigationAction label="Players" value="players" icon={people} />
+            <BottomNavigationAction label="Chat" value="chat" icon={<Chat />} />
             <BottomNavigationAction label="ExitToApp" value="exit" icon={<ExitToApp />} />
          </BottomNavigation>
 

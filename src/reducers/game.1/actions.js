@@ -1,13 +1,3 @@
-export default {
-   types,
-   addUser,
-   removeUser,
-   addStep,
-   userReady,
-   updateUsers,
-   mergeUsers
-};
-
 export const types = {
    addUser: 'GAME_ADD_USER',
    removeUser: 'GAME_REMOVE_USER',

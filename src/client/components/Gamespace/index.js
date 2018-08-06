@@ -1,22 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import tAppBar from './templates/appBar.jsx';
-import tBottomNav from './templates/bottomNav.jsx';
-
-import { actions as gameActions } from '../../../reducers/userConfig';
+import BottomNav from './BottomNav';
 
 export class Gamespace extends Component {
-   state = {
-      openPlayersList: false
-   };
-
-   handleChange = (event, value) => {
-      if (value === 'exit') {
-         this.props.dispatch(gameActions.reset());
-      } else if (value === 'players') {
-         this.setState({ openPlayersList: true });
-      }
-   };
 
    closePlayersList = () => {
       this.setState({ openPlayersList: false });
@@ -33,14 +20,7 @@ export class Gamespace extends Component {
 
             <div className="content"></div>
 
-            <div className="bottom">
-               {
-                  tBottomNav(this.state, {
-                     bottomNavigation: this.handleChange,
-                     closePlayersList: this.closePlayersList
-                  })
-               }
-            </div>
+            <BottomNav />
          </div>
       );
    };

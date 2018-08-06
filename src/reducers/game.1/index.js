@@ -5,6 +5,10 @@ import removeUser from './removeUser';
 import addStep from './addStep';
 import userReady from './userReady';
 
+export * as actions from './actions';
+export * as defaultStore from './defaultStore';
+export const common = { addUser, removeUser, addStep, userReady };
+
 export default function(store = defaultStore(), action) {
    const { type } = action;
 
@@ -28,7 +32,7 @@ export default function(store = defaultStore(), action) {
             ...storeUsers,
             ...actionUsers
          }
-      }
+      };
    }
 
    return store;

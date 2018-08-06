@@ -11,7 +11,7 @@ export class App extends Component {
       const { userConfig } = this.props;
       let content;
 
-      if (userConfig.login && userConfig.room) {
+      if (userConfig.login && userConfig.nameRoom) {
          content = <Gamespace />;
       } else {
          content = <Signin />;

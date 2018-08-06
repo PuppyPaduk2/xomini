@@ -1,6 +1,9 @@
 import { types } from './actions';
 import defaultStore from './defaultStore';
 
+export * as actions from './actions';
+export * as defaultStore from './defaultStore';
+
 export default function(store = defaultStore, action) {
    const { type } = action;
 
@@ -12,7 +15,7 @@ export default function(store = defaultStore, action) {
    } else if (type === types.setRoom) {
       return {
          ...store,
-         room: action.room
+         nameRoom: action.nameRoom
       };
    } else if (type === types.reset) {
       return {
@@ -22,5 +25,3 @@ export default function(store = defaultStore, action) {
 
    return store;
 };
-
-export * as actions from './actions';

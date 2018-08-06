@@ -12,7 +12,7 @@ export default function(userConfig = {}) {
       <AppBar position="static" color="default">
          <Toolbar>
             <Typography variant="title" color="inherit">
-               {userConfig.room}
+               {userConfig.nameRoom}
             </Typography>
 
             <div className="login">

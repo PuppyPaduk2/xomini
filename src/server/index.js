@@ -3,7 +3,7 @@ import express from 'express';
 import http from 'http';
 import io from 'socket.io';
 import main from './get/main';
-import gameActions from '../reducers/game/actions';
+// import gameActions from '../reducers/game/actions';
 
 const PORT = 3000;
 const app = express();
@@ -56,7 +56,7 @@ serverIo.on('connection', socket => {
                return result;
             }
          }, serverIo)
-            .emit('removeUser:fromServer', gameActions.removeUser(login));
+            // .emit('removeUser:fromServer', gameActions.removeUser(login));
       }
    });
 });
