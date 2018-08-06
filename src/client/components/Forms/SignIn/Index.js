@@ -30,7 +30,7 @@ export class Signin extends Component {
       if (nameRoom !== '') {
          const setLoginAction = userConfigActions.setLogin(login);
 
-         dispatch(userConfigActions.setRoom(nameRoom));
+         dispatch(userConfigActions.setNameRoom(nameRoom));
          dispatch(setLoginAction);
 
          console.log(setLoginAction)

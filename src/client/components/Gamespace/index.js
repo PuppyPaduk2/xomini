@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import tAppBar from './templates/appBar.jsx';
+import {
+   AppBar,
+   Typography,
+   Toolbar,
+   Button
+} from '@material-ui/core';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import BottomNav from './BottomNav';
 
 export class Gamespace extends Component {
@@ -15,7 +21,24 @@ export class Gamespace extends Component {
       return (
          <div className="gamespace">
             <div className="top">
-               {tAppBar(userConfig)}
+               <AppBar position="static" color="default">
+                  <Toolbar>
+                     <Typography variant="title" color="inherit">
+                        {userConfig.nameRoom}
+                     </Typography>
+
+                     <div className="login">
+                        <Button size="small">
+                           <AccountCircle
+                              style={({ marginRight: '.5rem' })}
+                              color="primary"
+                           />
+
+                           {userConfig.login}
+                        </Button>
+                     </div>
+                  </Toolbar>
+               </AppBar>
             </div>
 
             <div className="content"></div>

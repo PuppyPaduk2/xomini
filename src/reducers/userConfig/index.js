@@ -1,8 +1,33 @@
-import { types } from './actions';
-import defaultStore from './defaultStore';
+export const defaultStore = {
+   login: null,
+   room: null
+};
 
-export * as actions from './actions';
-export * as defaultStore from './defaultStore';
+export const types = {
+   setLogin: 'USER_CONFIG_SET_LOGIN',
+   setRoom: 'USER_CONFIG_SET_ROOM',
+   reset: 'USER_CONFIG_RESET'
+};
+
+export const actions = {
+   setLogin: login => {
+      return {
+         type: types.setLogin,
+         login: checkNull(login, 'Player')
+      };
+   },
+   setNameRoom: nameRoom => {
+      return {
+         type: types.setRoom,
+         nameRoom: checkNull(nameRoom, 'Room')
+      };
+   },
+   reset: () => {
+      return {
+         type: types.reset
+      };
+   }
+};
 
 export default function(store = defaultStore, action) {
    const { type } = action;
@@ -24,4 +49,15 @@ export default function(store = defaultStore, action) {
    }
 
    return store;
+};
+
+/**
+ * @param {String} value
+ * @param {String} [namespace]
+ * @param {String} [separator]
+ */
+function checkNull(value, namespace = '', separator = '#') {
+   return (value === null || value === undefined || value === '')
+      ? [namespace, new Date().getTime()].join(separator)
+      : value;
 };
