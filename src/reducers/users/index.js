@@ -1,11 +1,4 @@
-export const defStore = {
-   '@user1': {},
-   '@user2': {},
-   '@user3': {},
-   '@user4': {},
-   '@user5': {},
-   '@user6': {}
-};
+export const defStore = {};
 
 export const types = {
    add: 'USERS_ADD',
@@ -34,7 +27,9 @@ export default function(store = defStore, action) {
    if (type === types.add && login && !store[login]) {
       return {
          ...store,
-         [login]: {}
+         [login]: {
+            game: null
+         }
       };
    } else if (type === types.remove && login && store[login]) {
       delete store[login];
