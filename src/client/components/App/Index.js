@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import ComponentSocket from '../ComponentSocket';
 import Gamespace from '../Gamespace';
 import Signin from '../Forms/SignIn';
 
-export class App extends ComponentSocket {
+export class App extends Component {
    componentDidMount() {
    };
 

@@ -1,6 +1,11 @@
 import { Component } from 'react';
+import io from 'socket.io-client';
 
 export default class extends Component {
+   socketCreate = () => {
+      this.socket = socketCreate();
+   };
+
    socketOn = (handlers = {}) => {
       socketOn(this.socket, handlers);
    };
@@ -8,6 +13,20 @@ export default class extends Component {
    socketEmit = (nameEvent, ...args) => {
       socketEmit(this.socket, nameEvent, ...args);
    };
+};
+
+/**
+ * @param {String[]} [url]
+ * @param {Object} options
+ */
+export default function socketCreate(url, options = {}) {
+   options = {
+      transports: ['websocket'],
+      upgrade: false,
+      ...options
+   };
+
+   return io(url, options);
 };
 
 /**

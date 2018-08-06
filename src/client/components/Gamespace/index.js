@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import ComponentSocket from '../ComponentSocket';
 import tAppBar from './templates/appBar.jsx';
 import tBottomNav from './templates/bottomNav.jsx';
 
 import { actions as gameActions } from '../../../reducers/userConfig';
 
-export class Gamespace extends ComponentSocket {
+export class Gamespace extends Component {
    state = {
       openPlayersList: false
    };
