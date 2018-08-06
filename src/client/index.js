@@ -9,7 +9,7 @@ import HtmlStyle from './components/Html/Style.less';
 import AppStyle from './components/App/Style.less';
 import gamespace from './components/Gamespace/Style.less';
 import signin from './components/Forms/SignIn/Style.less';
-import playersList from './components/Gamespace/BottomNav/PlayersList/Style.less';
+import gamestyle from './components/Gamespace/Content/Game/Style.less';
 
 let initialData = document.getElementById('initial-data').getAttribute('data-json');
 initialData = typeof initialData === 'string' ? JSON.parse(initialData) : {};

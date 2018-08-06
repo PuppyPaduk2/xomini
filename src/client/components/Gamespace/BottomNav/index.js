@@ -9,7 +9,8 @@ import People from '@material-ui/icons/People';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Chat from '@material-ui/icons/Chat';
 
-import { actions as gameActions } from 'reducers/userConfig';
+import { actions as userConfigActions } from 'reducers/userConfig';
+import { actions as usersActions } from 'reducers/users';
 import PlayersList from './PlayersList';
 
 export class BottomNav extends Component {
@@ -18,8 +19,11 @@ export class BottomNav extends Component {
    };
 
    changeValue = (event, value) => {
+      const { dispatch, userConfig } = this.props;
+
       if (value === 'exit') {
-         this.props.dispatch(gameActions.reset());
+         dispatch(usersActions.remove(userConfig.login));
+         dispatch(userConfigActions.reset());
       } else if (value === 'players') {
          this.setState({ openPlayersList: true });
       }

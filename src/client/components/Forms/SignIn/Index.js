@@ -32,9 +32,6 @@ export class Signin extends Component {
 
          dispatch(userConfigActions.setNameRoom(nameRoom));
          dispatch(setLoginAction);
-
-         console.log(setLoginAction)
-
          dispatch(usersActions.add(setLoginAction.login));
       } else {
          this.setState({ errorNameRoom: true });
