@@ -20,9 +20,6 @@ export class PlayersList extends Component {
    render() {
       let { open, onClose, users, userConfig } = this.props;
 
-      users = { ...users };
-      delete users[userConfig.login];
-
       const usersList = Object.keys(users).map((login, index) => {
          return <ListItem key={index} button>{login}</ListItem>;
       });

@@ -30,7 +30,7 @@ export class BottomNav extends Component {
    };
 
    render() {
-      const usersCount = Object.keys(this.props.users).length - 1;
+      const usersCount = Object.keys(this.props.users).length;
       const people = <Badge badgeContent={usersCount} color="primary">
          <People />
       </Badge>;
