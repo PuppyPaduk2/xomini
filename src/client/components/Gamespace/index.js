@@ -16,8 +16,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import VideogameAsset from '@material-ui/icons/VideogameAsset';
 import Game from './Content/Game';
 import PlayersList from './Content/PlayersList';
-import { actions as userConfigActions } from 'reducers/userConfig';
-import { actions as usersActions } from 'reducers/users';
+import { emit } from 'reducers/socket/actions';
 
 export class Gamespace extends Component {
    state = {
@@ -25,11 +24,10 @@ export class Gamespace extends Component {
    };
 
    changeValueNav = (event, value) => {
-      const { dispatch, userConfig } = this.props;
+      const { dispatch } = this.props;
 
       if (value === 'exit') {
-         dispatch(usersActions.remove(userConfig.login));
-         dispatch(userConfigActions.reset());
+         dispatch(emit('rooms#removeUser'));
       } else {
          this.setState({ mode: value });
       }

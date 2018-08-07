@@ -2,9 +2,22 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Gamespace from '../Gamespace';
 import Signin from '../Forms/SignIn';
+import * as socket from 'client/common/Socket';
+import * as socketActions from 'reducers/socket/actions';
 
 export class App extends Component {
    componentDidMount() {
+      const { dispatch } = this.props;
+      const action = socketActions.add(socket.create());
+
+      dispatch(action);
+      dispatch(socketActions.on(
+         'actions', (...actions) => {
+            actions.forEach(action => {
+               dispatch(action);
+            });
+         }
+      ));
    };
 
    render() {

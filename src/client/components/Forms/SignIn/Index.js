@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Input, Button } from '@material-ui/core';
 
-import { actions as userConfigActions } from 'reducers/userConfig';
-import { actions as usersActions } from 'reducers/users';
+import { emit, once } from 'reducers/socket/actions';
 
 export class Signin extends Component {
    values = {
@@ -12,14 +11,14 @@ export class Signin extends Component {
    };
 
    state = {
-      errorNameRoom: false
+      isValidError: false
    };
 
    changeText = name => ev => {
       this.values[name] = ev.target.value.trim();
 
-      if (name === 'nameRoom' && this.state.errorNameRoom) {
-         this.setState({ errorNameRoom: false });
+      if (this.state.isValidError) {
+         this.setState({ isValidError: false });
       }
    };
 
@@ -27,19 +26,27 @@ export class Signin extends Component {
       const { dispatch } = this.props;
       let { nameRoom, login } = this.values;
 
-      if (nameRoom !== '') {
-         const setLoginAction = userConfigActions.setLogin(login);
+      if (nameRoom && nameRoom !== '' && login && login !== '') {
+         dispatch(once(
+            'rooms#create:result', result => {
+               if (!result) {
+                  this.setState({ isValidError: true });
+               }
+            }
+         ));
 
-         dispatch(userConfigActions.setNameRoom(nameRoom));
-         dispatch(setLoginAction);
-         dispatch(usersActions.add(setLoginAction.login));
+         dispatch(emit(
+            'rooms#create',
+            nameRoom,
+            login
+         ));
       } else {
-         this.setState({ errorNameRoom: true });
+         this.setState({ isValidError: true });
       }
    };
 
    render() {
-      const { errorNameRoom } = this.state;
+      const { isValidError } = this.state;
       const { nameRoom, login } = this.values;
 
       return (
@@ -48,13 +55,14 @@ export class Signin extends Component {
                placeholder="Name room"
                defaultValue={nameRoom}
                onChange={this.changeText('nameRoom')}
-               error={errorNameRoom}
+               error={isValidError}
             />
 
             <Input
                placeholder="Login"
                defaultValue={login}
                onChange={this.changeText('login')}
+               error={isValidError}
             />
 
             <Button

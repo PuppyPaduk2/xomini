@@ -13,13 +13,13 @@ export const actions = {
    setLogin: login => {
       return {
          type: types.setLogin,
-         login: checkNull(login, 'Player')
+         login: login
       };
    },
    setNameRoom: nameRoom => {
       return {
          type: types.setRoom,
-         nameRoom: checkNull(nameRoom, 'Room')
+         nameRoom: nameRoom
       };
    },
    reset: () => {
