@@ -79,12 +79,11 @@ export class Gamespace extends Component {
                <BottomNavigation
                   value={mode}
                   onChange={this.changeValueNav}
-                  showLabels
                >
-                  <BottomNavigationAction label="Game" value="game" icon={<VideogameAsset />} />
-                  <BottomNavigationAction label="Players" value="players" icon={people} />
-                  <BottomNavigationAction label="Chat" value="chat" icon={<Chat />} />
-                  <BottomNavigationAction label="ExitToApp" value="exit" icon={<ExitToApp />} />
+                  <BottomNavigationAction value="game" icon={<VideogameAsset />} />
+                  <BottomNavigationAction value="players" icon={people} />
+                  <BottomNavigationAction value="chat" icon={<Chat />} />
+                  <BottomNavigationAction value="exit" icon={<ExitToApp />} />
                </BottomNavigation>
             </div>
          </div>
