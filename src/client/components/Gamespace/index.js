@@ -1,99 +1,91 @@
-import React from 'react';
-import ComponentSocket from '../ComponentSocket';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import colors from './colors';
-import templates from './templates';
-import gameAction from '../../../reducers/game/actions';
-
-import { BottomNavigation, BottomNavigationAction, Button } from '@material-ui/core';
+import {
+   AppBar,
+   Typography,
+   Toolbar,
+   Button,
+   BottomNavigation,
+   BottomNavigationAction,
+   Badge
+} from '@material-ui/core';
 import People from '@material-ui/icons/People';
 import ExitToApp from '@material-ui/icons/ExitToApp';
+import Chat from '@material-ui/icons/Chat';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import VideogameAsset from '@material-ui/icons/VideogameAsset';
+import Game from './Content/Game';
+import PlayersList from './Content/PlayersList';
+import { emit } from 'reducers/socket/actions';
 
-export class Gamespace extends ComponentSocket {
+export class Gamespace extends Component {
    state = {
-      ping: 0
+      mode: 'game'
    };
 
-   componentDidMount(...args) {
+   changeValueNav = (event, value) => {
       const { dispatch } = this.props;
 
-      if (this.props.socket) {
-         this.socket = this.props.socket;
-      }
-
-      this.socketOn({
-         'userReady:fromClient': this._userReadyResult.bind(this),
-         'addStep:fromClient': action => dispatch(action)
-      });
-   };
-
-   onStart = () => {
-      const userConfig = this.props.userConfig;
-
-      this.socketEmit(
-         'userReady:toClient',
-         gameAction.userReady(userConfig.login),
-         userConfig.room
-      );
-   };
-
-   _onClickColor = color => () => {
-      const { dispatch, userConfig } = this.props;
-      const addStepAction = gameAction.addStep(userConfig.login, color);
-
-      dispatch(addStepAction);
-      this.socketEmit('addStep:toClient', addStepAction, userConfig.room);
-   };
-
-   _userReadyResult(action) {
-      const { dispatch, userConfig } = this.props;
-
-      dispatch(action);
-
-      if (userConfig.login !== action.login) {
-         this.setState({
-            ping: this.state.ping + 1
-         });
+      if (value === 'exit') {
+         dispatch(emit('rooms#removeUser'));
+      } else {
+         this.setState({ mode: value });
       }
    };
 
    render() {
-      const { ping } = this.state;
-      const { game } = this.props;
-      const { users, begin } = game;
-      const usersCount = Object.keys(users).length;
-      let disabledButtonStart = (!begin && usersCount > 1) ? false : true;
-      let userReady = ping > 1
-         ? (<div className="user-ready" key={ping}><div className="ping"></div></div>)
-         : null;
+      const { mode } = this.state;
+      const { userConfig } = this.props;
+      const usersCount = Object.keys(this.props.users).length;
+      const people = <Badge badgeContent={usersCount} color="primary">
+         <People />
+      </Badge>;
+      let content;
+
+      if (mode === 'game') {
+         content = <Game />;
+      } else if (mode === 'players') {
+         content = <PlayersList />;
+      }
 
       return (
          <div className="gamespace">
-            {templates.state(game)}
+            <div className="top">
+               <AppBar position="static" color="default">
+                  <Toolbar>
+                     <Typography variant="title" color="inherit">
+                        {userConfig.nameRoom}
+                     </Typography>
 
-            <div className="buttons">
-               {templates.palette(colors, this._onClickColor, !begin)}
+                     <div className="login">
+                        <Button size="small">
+                           <AccountCircle
+                              style={({ marginRight: '.5rem' })}
+                              color="primary"
+                           />
 
-               <Button
-                  size="small"
-                  color="secondary"
-                  variant="contained"
-                  ref={el => this.button = el}
-                  onClick={this.onStart}
-                  disabled={disabledButtonStart}
-               >
-                  Start
-               </Button>
-
-               {userReady}
+                           {userConfig.login}
+                        </Button>
+                     </div>
+                  </Toolbar>
+               </AppBar>
             </div>
 
-            <BottomNavigation
-               showLabels
-            >
-               <BottomNavigationAction label="People" icon={<People />} />
-               <BottomNavigationAction label="ExitToApp" icon={<ExitToApp />} />
-            </BottomNavigation>
+            <div className="content">
+               {content}
+            </div>
+
+            <div className="bottom-nav">
+               <BottomNavigation
+                  value={mode}
+                  onChange={this.changeValueNav}
+               >
+                  <BottomNavigationAction value="game" icon={<VideogameAsset />} />
+                  <BottomNavigationAction value="players" icon={people} />
+                  <BottomNavigationAction value="chat" icon={<Chat />} />
+                  <BottomNavigationAction value="exit" icon={<ExitToApp />} />
+               </BottomNavigation>
+            </div>
          </div>
       );
    };

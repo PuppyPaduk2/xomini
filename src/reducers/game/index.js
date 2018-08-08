@@ -1,34 +1,29 @@
-import { types } from './actions';
-import defaultStore from './defaultStore';
-import addUser from './addUser';
-import removeUser from './removeUser';
-import addStep from './addStep';
-import userReady from './userReady';
+export const types = {
+   create: 'GAME_CREATE'
+};
 
-export default function(store = defaultStore(), action) {
+export const actions = {
+   create: (login) => {
+      return {
+         type: types.create,
+         id: 'game@' + new Date().getTime(),
+         creator: login,
+         users: {
+            [login]: {}
+         }
+      };
+   }
+};
+
+export default function(store = null, action) {
    const { type } = action;
 
-   if (type === types.addUser) {
-      return addUser(store, action);
-   } else if (type === types.removeUser) {
-      return removeUser(store, action);
-   } else if (type === types.userReady) {
-      return userReady(store, action);
-   }  else if (type === types.addStep) {
-      return addStep(store, action);
-   } else if (type === types.updateUsers) {
-      return { ...store, users: action.users };
-   } else if (type === types.mergeUsers) {
-      const storeUsers = store.users;
-      const actionUsers = action.users;
+   if (type === types.create) {
+      const { id } = action;
 
       return {
-         ...store,
-         users: {
-            ...storeUsers,
-            ...actionUsers
-         }
-      }
+         id
+      };
    }
 
    return store;

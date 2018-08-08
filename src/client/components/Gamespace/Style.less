@@ -1,98 +1,16 @@
-@color-width: 2rem;
-@color-border-radius: 4px;
-@color-grid-gap: .5rem;
-
 .gamespace {
    width: 100%;
    height: 100%;
    display: grid;
-   position: relative;
-   grid-template-rows: 1fr 1fr;
+   grid-template-rows: 0fr 1fr;
 
-   .state, .palette, .buttons {
+   .content {
       display: grid;
-      justify-content: center;
-      align-content: center;
    }
 
-   .color {
-      border-radius: @color-border-radius;
-      width: @color-width;
-      max-width: @color-width;
-      min-width: @color-width;
-      background-color: rgba(0, 0, 0, 0.12);
-   }
-
-   .state {
-      .content {
-         display: grid;
-         justify-content: center;
-         align-content: center;
-
-         grid-auto-columns: @color-width;
-         grid-auto-rows: @color-width;
-         grid-gap: @color-grid-gap;
-      }
-   }
-
-   .users {
+   .login {
+      display: flex;
       width: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-         0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-         0px 3px 1px -2px rgba(0, 0, 0, 0.12);
-
-      .user {
-         background-color: aquamarine;
-         padding: .5rem;
-
-         &.ready {
-            font-weight: bold;
-         }
-      }
-   }
-
-   .palette {
-      margin-bottom: 1.5rem;
-      grid-auto-columns: @color-width;
-      grid-auto-rows: @color-width;
-      grid-gap: @color-grid-gap;
-      grid-template-columns: repeat(3, @color-width);
-   }
-
-   .buttons {
-      position: relative;
-
-      .user-ready {
-         position: absolute;
-         bottom: 0;
-         right: 0;
-
-         .ping {
-            position: absolute;
-            bottom: .5rem;
-            right: .5rem;
-            width: @color-width;
-            height: @color-width;
-            border-radius: @color-border-radius;
-            background-color: #F44336;
-            animation: 1s show-ping;
-            opacity: 0;
-
-            @keyframes show-ping {
-               0% {
-                  opacity: 1;
-                  bottom: .5rem;
-               }
-               100% {
-                  opacity: 0;
-                  bottom: 5rem;
-               }
-            }
-         }
-      }
+      justify-content: flex-end;
    }
 }

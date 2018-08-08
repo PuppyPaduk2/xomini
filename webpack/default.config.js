@@ -56,7 +56,11 @@ module.exports = function(options) {
          noParse: module.noParse
       },
       resolve: {
-         extensions: ['*', '.js', '.jsx']
+         extensions: ['*', '.js', '.jsx'],
+         modules: [
+            'node_modules',
+            'src'
+         ]
       },
       devtool: 'source-map',
       externals: options.externals,

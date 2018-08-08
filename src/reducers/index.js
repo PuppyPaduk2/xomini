@@ -1,9 +1,18 @@
 import { combineReducers } from 'redux';
-// import games from './games';
-import game from './game';
 import userConfig from './userConfig';
+import users from './users';
+import game from './game';
+import rooms from './rooms';
+import socket from './socket';
 
-export const gameReducers = combineReducers({
+
+export const client = combineReducers({
+   userConfig,
+   users,
    game,
-   userConfig
+   socket
+});
+
+export const server = combineReducers({
+   rooms
 });

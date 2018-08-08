@@ -1,20 +1,24 @@
-import { Component } from 'react';
+import io from 'socket.io-client';
 
-export default class extends Component {
-   socketOn = (handlers = {}) => {
-      socketOn(this.socket, handlers);
+/**
+ * @param {String[]} [url]
+ * @param {Object} options
+ */
+export function create(url, options = {}) {
+   options = {
+      transports: ['websocket'],
+      upgrade: false,
+      ...options
    };
 
-   socketEmit = (nameEvent, ...args) => {
-      socketEmit(this.socket, nameEvent, ...args);
-   };
+   return io(url, options);
 };
 
 /**
  * @param {Socket} socket
  * @param {Object} handlers
  */
-export function socketOn(socket, handlers = {}) {
+export function on(socket, handlers = {}) {
    if (socket && socket.emit) {
       Object.keys(handlers).forEach(nameEvent => {
          let eventHandlers = handlers[nameEvent];
@@ -39,7 +43,7 @@ export function socketOn(socket, handlers = {}) {
  * @param {String} nameEvent
  * @param {Array} [args]
  */
-export function socketEmit(socket, nameEvent, ...args) {
+export function emit(socket, nameEvent, ...args) {
    if (socket && socket.emit) {
       socket.emit(nameEvent, ...args);
    }
